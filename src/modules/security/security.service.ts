@@ -17,4 +17,16 @@ export class SecurityService {
       throw error;
     }
   }
+
+  public async verifyPassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    try {
+      return bcrypt.compare(password, hashedPassword);
+    } catch (error) {
+      this.logger.error(error);
+      throw error;
+    }
+  }
 }

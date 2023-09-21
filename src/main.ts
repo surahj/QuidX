@@ -10,8 +10,8 @@ import {
 } from 'nest-winston';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-import { UsersModule } from '@api/users/users.module';
-import { AuthenticationModule } from '@api/authentication/authentication.module';
+import { UsersModule } from '@api/v1/users/users.module';
+import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
 
 async function bootstrap() {
   const infoLogRotationTransport = new DailyRotateFile({

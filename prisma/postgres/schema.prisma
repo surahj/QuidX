@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/postgres/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  pk                         Int                          @id @default(autoincrement())
+  id                         String                       @unique @default(uuid())
+  email                      String                       @unique
+  password                   String
+  role                       Role                         @default(USER)
+  phoneNumber                String?                      @unique @map("phone_number")
+  fullName                   String?
+  avatar                     String?
+  isBlocked                  Boolean                      @default(false)
+  gender                     Gender?
+  dateOfBirth                DateTime?
+  city                       String?
+  stateOfResidence           String?                      @map("state_of_residence")
+  lga                        String?
+  isEmailVerified            Boolean?                     @default(false) @map("is_email_verified")
+  isPhoneNumberVerified      Boolean?                     @default(false) @map("is_phone_number_verified")
+  createdAt                  DateTime                     @default(now()) @map("created_at")
+  updatedAt                  DateTime                     @updatedAt @map("update_at")
+
+  @@map("users")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
