@@ -1,12 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
-// import { JwtService } from '@nestjs/jwt';
+import { Injectable, Logger, Inject } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { TokenType } from '@common/enums';
+import {
+  GenerateTokenOptions,
+  TokenData,
+  VerifyTokenOptions,
+  VerifyOtpParams,
+} from './security.interface';
+import { ErrorResponse } from '@common/errors';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class SecurityService {
   private readonly logger = new Logger(SecurityService.name);
 
-  // constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+  ) {}
 
   public async hashPassword(password: string): Promise<string> {
     try {
@@ -28,5 +41,70 @@ export class SecurityService {
       this.logger.error(error);
       throw error;
     }
+  }
+
+  public async generateToken(
+    data: TokenData,
+    options?: GenerateTokenOptions,
+  ): Promise<string> {
+    if (options == null) {
+      options = {};
+    }
+
+    if (options?.expiresIn == null) {
+      options['expiresIn'] = '24h';
+    }
+
+    if (options?.algorithm == null) {
+      options['algorithm'] = 'RS256';
+    }
+
+    return this.jwtService.signAsync({ data }, options);
+  }
+
+  public verifyToken = async (
+    token: string,
+    tokenType: TokenType,
+    option?: VerifyTokenOptions,
+  ): Promise<TokenData> => {
+    try {
+      const decoded = await this.jwtService.verifyAsync(token, option);
+
+      const data = decoded.data as TokenData;
+
+      if (data.tokenType != tokenType) {
+        throw new ErrorResponse('Invalid token type', 400);
+      }
+      return data;
+    } catch (err) {
+      let message = 'Invalid Token';
+      if (err.name === 'TokenExpiredError') {
+        message = 'Token expired';
+      }
+
+      throw new ErrorResponse(message, 401);
+    }
+  };
+
+  public generateOTP = async (userId: string): Promise<string> => {
+    // Generate a random number between 100000 and 999999 (inclusive)
+    const min = 100000;
+    const max = 999999;
+    const otp = Math.floor(Math.random() * (max - min + 1)) + min;
+    // Convert the number to a string and pad it with leading zeros if necessary
+    const otpString = otp.toString().padStart(6, '0');
+    await this.cacheManager.set(userId, otpString, { ttl: 240 } as any); //ttl in seconds, expires in 4min
+    return otpString;
+  };
+
+  public async isOtpValid({ otp, key }: VerifyOtpParams) {
+    const otpMetaDataInCacheString: string = await this.cacheManager.get(key);
+
+    if (otpMetaDataInCacheString == otp) {
+      this.cacheManager.del(key);
+      return true;
+    }
+
+    return false;
   }
 }

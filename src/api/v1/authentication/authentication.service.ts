@@ -1,9 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ErrorResponse } from '@common/errors';
 import { SecurityService } from '@modules/security/security.service';
 import { UserSignUpDataDto } from './dto/signup.dto';
 import { UsersService } from '@api/v1/users/users.service';
-import { loginDto } from './dto/login.dto';
+import { loginDto, ForgotPasswordDto } from './dto';
+import { TokenType } from '@common/enums';
+import { EmailService } from '@modules/emails/email.service';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { OtpArgs, VerifyOtpParams } from '@modules/emails/types';
 
 @Injectable()
 export class AuthenticationService {
@@ -12,6 +17,8 @@ export class AuthenticationService {
   constructor(
     private readonly usersService: UsersService,
     private readonly securityService: SecurityService,
+    private readonly emailService: EmailService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   public async signUpUser(payload: UserSignUpDataDto) {
@@ -52,5 +59,87 @@ export class AuthenticationService {
     }
 
     return user;
+  }
+
+  public async forgotPasswordInit({
+    email,
+  }: ForgotPasswordDto): Promise<string> {
+    const user = await this.usersService.getUserByEmail(email);
+
+    if (user == null) {
+      throw new ErrorResponse('Invalid credentials', 400);
+    }
+
+    const token = await this.securityService.generateOTP(user.id);
+
+    await this.emailService.sendOtpToEmail({
+      email,
+      username: user.fullName,
+      token,
+    });
+
+    const _2FAToken = await this.securityService.generateToken(
+      {
+        id: user.id,
+        role: user.role,
+        tokenType: TokenType.MFA,
+      },
+      { expiresIn: '8m' },
+    );
+
+    return _2FAToken;
+  }
+
+  public async forgotPassword2FA(args: {
+    _2FAToken: string;
+    otp: string;
+  }): Promise<string> {
+    const { _2FAToken, otp } = args;
+
+    const tokenData = await this.securityService.verifyToken(
+      _2FAToken,
+      TokenType.MFA,
+    );
+
+    const isOtpValid = await this.securityService.isOtpValid({
+      otp,
+      key: tokenData.id,
+    });
+
+    if (!isOtpValid) {
+      throw new ErrorResponse('Invalid Otp', 400);
+    }
+
+    const resetToken = await this.securityService.generateToken({
+      id: tokenData.id,
+      accountType: tokenData.accountType,
+      tokenType: TokenType.RESET_PASSWORD,
+    });
+
+    return resetToken;
+  }
+
+  public async resetPassword(args: {
+    newPassword: string;
+    resetToken: string;
+  }) {
+    const { newPassword, resetToken } = args;
+
+    const tokenData = await this.securityService.verifyToken(
+      resetToken,
+      TokenType.RESET_PASSWORD,
+    );
+
+    const newHashedPassword = await this.securityService.hashPassword(
+      newPassword,
+    );
+
+    const user = await this.usersService.getUserByIdAndUpdate(tokenData.id, {
+      password: newHashedPassword,
+    });
+
+    if (user == null) {
+      throw new ErrorResponse('Something went wrong', 500);
+    }
   }
 }

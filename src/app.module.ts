@@ -81,7 +81,7 @@ export class AppModule implements NestModule {
             httpOnly: true,
             sameSite: false,
             secure: this.configService.get<string>('NODE_ENV') === 'production',
-            maxAge: 3 * 60 * 60 * 1000, // 3hours
+            // maxAge: 3 * 60 * 60 * 1000, // 3hours
           },
         }),
       )

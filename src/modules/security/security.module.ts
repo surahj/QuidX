@@ -4,7 +4,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { SecurityService } from './security.service';
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        privateKey: config.getOrThrow('JWT_PRIVATE_KEY'),
+        publicKey: config.getOrThrow('JWT_PUBLIC_KEY'),
+      }),
+    }),
+  ],
   providers: [SecurityService],
   exports: [SecurityService],
 })
