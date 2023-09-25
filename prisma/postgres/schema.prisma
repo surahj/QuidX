@@ -20,7 +20,8 @@ model User {
   password                   String
   role                       Role                         @default(USER)
   phoneNumber                String?                      @unique @map("phone_number")
-  fullName                   String?
+  firstName                  String?
+  lastName                  String?
   avatar                     String?
   isBlocked                  Boolean                      @default(false)
   gender                     Gender?

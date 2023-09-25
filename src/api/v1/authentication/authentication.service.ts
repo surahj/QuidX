@@ -8,7 +8,6 @@ import { TokenType } from '@common/enums';
 import { EmailService } from '@modules/emails/email.service';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { OtpArgs, VerifyOtpParams } from '@modules/emails/types';
 
 @Injectable()
 export class AuthenticationService {
@@ -37,7 +36,8 @@ export class AuthenticationService {
     return await this.usersService.createUser({
       email: payload.email,
       password: hashedPassword,
-      fullName: payload.fullName,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
     });
   }
 
@@ -74,7 +74,7 @@ export class AuthenticationService {
 
     await this.emailService.sendOtpToEmail({
       email,
-      username: user.fullName,
+      username: user.firstName,
       token,
     });
 

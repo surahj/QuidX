@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as Mailgen from 'mailgen';
 import * as nodemailer from 'nodemailer';
-import { EmailOptionsType, ReceiverEmailData, OtpArgs } from './types';
+import { EmailOptionsType, ReceiverEmailData } from './types';
 
 dotenv.config();
 
