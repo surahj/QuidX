@@ -12,6 +12,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { UsersModule } from '@api/v1/users/users.module';
 import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
+import { ChatModule } from '@api/v1/chat/chat.module';
 
 async function bootstrap() {
   const infoLogRotationTransport = new DailyRotateFile({
@@ -62,7 +63,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  SwaggerInit(app, [UsersModule, AuthenticationModule]);
+  const modules = [UsersModule, AuthenticationModule, ChatModule];
+  SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');
 

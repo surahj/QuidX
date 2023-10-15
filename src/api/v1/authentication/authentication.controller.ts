@@ -17,6 +17,7 @@ import {
 } from './dto';
 import { Request } from 'express';
 import { Otp2FADto } from './dto/verification.dto';
+import { Role } from '@common/enums';
 
 @ApiTags('Authentication')
 @Controller('v1/authentication')
@@ -57,7 +58,7 @@ export class AuthenticationController {
     this.createSession(req)({
       id: user.id,
       email: user.email,
-      role: user.role,
+      role: Role.USER,
     });
 
     return { statusCode: 200, message: 'success', data: { id: user.id } };

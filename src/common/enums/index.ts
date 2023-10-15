@@ -7,3 +7,8 @@ export enum TokenType {
   RESET_PASSWORD = 'RESET_PASSWORD',
   FORGET_PASSWORD = 'FORGET_PASSWORD',
 }
+
+export enum Role {
+  USER = 'user',
+  ADMIN = 'admin',
+}

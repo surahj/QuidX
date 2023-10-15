@@ -23,6 +23,7 @@ import Redis from '@database/redis';
 import { redisStore } from 'cache-manager-redis-store';
 import RedisStore from 'connect-redis';
 import * as session from 'express-session';
+import { ChatModule } from '@api/v1/chat/chat.module';
 
 AdminJS.registerAdapter({ Database, Resource });
 
@@ -43,6 +44,7 @@ AdminJS.registerAdapter({ Database, Resource });
     DatabaseModule,
     UsersModule,
     AuthenticationModule,
+    ChatModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseLoggerInterceptor },
