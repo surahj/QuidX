@@ -24,11 +24,22 @@ export class ResponseLoggerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap({
         next: async (data) => {
-          this.logger.log(
-            JSON.stringify({ requestInfo, responseData: data }, null, 4),
-          );
+          if (data && data.password) {
+            const dataWithoutPassword = { ...data };
+            delete dataWithoutPassword.password;
 
-          return data;
+            this.logger.log(
+              JSON.stringify(
+                { requestInfo, responseData: dataWithoutPassword },
+                null,
+                4,
+              ),
+            );
+          } else {
+            this.logger.log(
+              JSON.stringify({ requestInfo, responseData: data }, null, 4),
+            );
+          }
         },
         error: async (err) => {
           return err;

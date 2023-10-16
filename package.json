@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "postinstall": "prisma generate --schema prisma/postgres/schema.prisma",
+    "postinstall": "yarn run prisma:postgres:dbpush",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

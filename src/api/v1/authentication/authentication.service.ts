@@ -43,7 +43,6 @@ export class AuthenticationService {
 
   public async loginUser(payload: loginDto) {
     const user = await this.usersService.getUserByEmail(payload.email);
-    console.log(user);
 
     if (!user) {
       throw new ErrorResponse('Invalid credentials', 400);
