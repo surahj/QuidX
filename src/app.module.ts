@@ -18,9 +18,7 @@ import { NestModule } from '@nestjs/common';
 import { RequestLogger } from '@common/middlewares/request-logger.middleware';
 import { UsersModule } from '@api/v1/users/users.module';
 import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
-import { CacheModule, CacheStore } from '@nestjs/cache-manager';
-import Redis from '@database/redis';
-import { redisStore } from 'cache-manager-redis-store';
+import RedisClient from '@database/redis';
 import RedisStore from 'connect-redis';
 import * as session from 'express-session';
 import { ChatModule } from '@api/v1/chat/chat.module';
@@ -29,16 +27,6 @@ AdminJS.registerAdapter({ Database, Resource });
 
 @Module({
   imports: [
-    CacheModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: (await redisStore({
-          url: configService.getOrThrow('REDIS_URL'),
-        })) as unknown as CacheStore,
-      }),
-    }),
     AdminJsModule.createAdminAsync(adminUIOptions),
     ConfigModule.forRoot({ validationSchema: envValidator }),
     DatabaseModule,
@@ -67,9 +55,9 @@ export class AppModule implements NestModule {
     consumer
       .apply(RequestLogger)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
-
+    const redis = new RedisClient();
     const sessionStore = new RedisStore({
-      client: new Redis(this.configService.getOrThrow('REDIS_URL')),
+      client: redis.getClient(),
     });
 
     consumer
@@ -83,7 +71,7 @@ export class AppModule implements NestModule {
             httpOnly: true,
             sameSite: false,
             secure: this.configService.get<string>('NODE_ENV') === 'production',
-            // maxAge: 3 * 60 * 60 * 1000, // 3hours
+            maxAge: 10 * 60 * 60 * 1000, // 10hours
           },
         }),
       )
