@@ -51,10 +51,7 @@ export class AuthenticationController {
 
   @Post('user/login')
   public async loginUser(@Req() req: Request, @Body() payload: loginDto) {
-    console.log(payload);
     const user = await this.authenticationService.loginUser(payload);
-    console.log(user);
-
     this.createSession(req)({
       id: user.id,
       email: user.email,

@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { TokenType } from '@common/enums';
@@ -9,17 +9,16 @@ import {
   VerifyOtpParams,
 } from './security.interface';
 import { ErrorResponse } from '@common/errors';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import RedisClient from '@database/redis';
 
 @Injectable()
 export class SecurityService {
   private readonly logger = new Logger(SecurityService.name);
+  cache: RedisClient;
 
-  constructor(
-    private readonly jwtService: JwtService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {
+    this.cache = new RedisClient();
+  }
 
   public async hashPassword(password: string): Promise<string> {
     try {
@@ -93,15 +92,15 @@ export class SecurityService {
     const otp = Math.floor(Math.random() * (max - min + 1)) + min;
     // Convert the number to a string and pad it with leading zeros if necessary
     const otpString = otp.toString().padStart(6, '0');
-    await this.cacheManager.set(userId, otpString, { ttl: 240 } as any); //ttl in seconds, expires in 4min
+    await this.cache.set(userId, otpString, 240); //ttl in seconds, expires in 4min
     return otpString;
   };
 
   public async isOtpValid({ otp, key }: VerifyOtpParams) {
-    const otpMetaDataInCacheString: string = await this.cacheManager.get(key);
+    const otpMetaDataInCacheString: string = await this.cache.get(key);
 
     if (otpMetaDataInCacheString == otp) {
-      this.cacheManager.del(key);
+      this.cache.del(key);
       return true;
     }
 

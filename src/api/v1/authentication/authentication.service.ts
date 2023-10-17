@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ErrorResponse } from '@common/errors';
 import { SecurityService } from '@modules/security/security.service';
 import { UserSignUpDataDto } from './dto/signup.dto';
@@ -6,8 +6,6 @@ import { UsersService } from '@api/v1/users/users.service';
 import { loginDto, ForgotPasswordDto } from './dto';
 import { TokenType } from '@common/enums';
 import { EmailService } from '@modules/emails/email.service';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class AuthenticationService {
@@ -17,7 +15,6 @@ export class AuthenticationService {
     private readonly usersService: UsersService,
     private readonly securityService: SecurityService,
     private readonly emailService: EmailService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   public async signUpUser(payload: UserSignUpDataDto) {
@@ -43,7 +40,6 @@ export class AuthenticationService {
 
   public async loginUser(payload: loginDto) {
     const user = await this.usersService.getUserByEmail(payload.email);
-    console.log(user);
 
     if (!user) {
       throw new ErrorResponse('Invalid credentials', 400);
