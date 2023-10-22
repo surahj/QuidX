@@ -2212,6 +2212,15 @@
     "@styled-system/core" "^5.1.2"
     "@styled-system/css" "^5.1.5"
 
+"@tatumio/tatum@^4.1.13":
+  version "4.1.13"
+  resolved "https://registry.yarnpkg.com/@tatumio/tatum/-/tatum-4.1.13.tgz#ac78a31084d65cd7b98f8af55ca7657a8d7050cf"
+  integrity sha512-Vnhp8OpQkjUNZ7LsXKK2GLJsPu7IqdzU7+EldPtj2Em4Z+9c8Dsj6ZITaycKdnB403+CKpwn+5a2PxIEsTqzQg==
+  dependencies:
+    bignumber.js "^9.1.1"
+    reflect-metadata "^0.1.13"
+    typedi "^0.10.0"
+
 "@tiptap/core@2.0.0-beta.217":
   version "2.0.0-beta.217"
   resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-2.0.0-beta.217.tgz#c3cc31c23cc7d12f2727bf065d99f0d18fe59dc1"
@@ -3451,6 +3460,11 @@ bcrypt@^5.1.1:
   dependencies:
     "@mapbox/node-pre-gyp" "^1.0.11"
     node-addon-api "^5.0.0"
+
+bignumber.js@^9.1.1:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
+  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
 
 binary-extensions@^2.0.0:
   version "2.2.0"
@@ -8073,6 +8087,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==
+
+typedi@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/typedi/-/typedi-0.10.0.tgz#e8f9a5ee100b84addbdfb57fe90d8d9ed2a21dea"
+  integrity sha512-v3UJF8xm68BBj6AF4oQML3ikrfK2c9EmZUyLOfShpJuItAqVBHWP/KtpGinkSsIiP6EZyyb6Z3NXyW9dgS9X1w==
 
 typescript@4.7.4, typescript@^4.3.5:
   version "4.7.4"
