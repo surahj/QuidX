@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerInit } from './swagger';
@@ -61,7 +61,10 @@ async function bootstrap() {
   app.enableCors();
 
   app.setGlobalPrefix('api');
-
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
   const configService = app.get(ConfigService);
 
   const modules = [UsersModule, AuthenticationModule, ChatModule, RateModule];

@@ -20,7 +20,7 @@ import { Otp2FADto } from './dto/verification.dto';
 import { Role } from '@common/enums';
 
 @ApiTags('Authentication')
-@Controller('v1/authentication')
+@Controller('authentication')
 export class AuthenticationController {
   private readonly logger = new Logger(AuthenticationController.name);
 
@@ -94,7 +94,7 @@ export class AuthenticationController {
     return { statusCode: 200, message: 'success' };
   }
 
-  @Get('logout')
+  @Get('user/logout')
   public async logout(@Req() req: Request) {
     req.session.destroy((err) => {
       if (err) {

@@ -31,10 +31,42 @@ model User {
   lga                        String?
   isEmailVerified            Boolean?                     @default(false) @map("is_email_verified")
   isPhoneNumberVerified      Boolean?                     @default(false) @map("is_phone_number_verified")
+  chats                      Chat[]
   createdAt                  DateTime                     @default(now()) @map("created_at")
   updatedAt                  DateTime                     @updatedAt @map("update_at")
 
   @@map("users")
+  @@index(fields: [email])
+}
+
+model Chat {
+  pk                          Int       @id @default(autoincrement())
+  id                          String    @unique @default(uuid())
+  userId                      String
+  user                        User      @relation(fields: [userId], references: [id])
+  title                       String?   @default("New Chat")
+  messages                    Message[]
+
+  createdAt                   DateTime  @default(now()) @map("created_at")
+  updatedAt                   DateTime  @updatedAt @map("update_at")
+
+  @@unique([pk, id])
+  @@map("chat")
+  @@index(fields: [id])
+}
+
+model Message {
+  pk                          Int     @id @default(autoincrement())
+  id                          String  @unique @default(uuid())
+  chatId                      String
+  chat                        Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  role                        String
+  content                     String
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("update_at")
+
+  @@unique([pk, id])
+  @@map("message")
 }
 
 enum Gender {

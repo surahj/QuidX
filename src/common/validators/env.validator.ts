@@ -8,6 +8,17 @@ export default Joi.object({
 
   DATABASE_URL: Joi.string().required(),
 
+  COMPANY_NAME: Joi.string().required(),
+  COMPANY_EMAIL: Joi.string().required(),
+  COMPANY_EMAIL_PASSWORD: Joi.string().required(),
+  SERVER_APP_HOST: Joi.string().required(),
+  SERVER_APP_PORT: Joi.string().required(),
+  NGIMDOCK_LINKEDIN: Joi.string().required(),
+
+  OPEN_AI_KEY: Joi.string().required(),
+  JWT_PUBLIC_KEY: Joi.string().required(),
+  JWT_PRIVATE_KEY: Joi.string().required(),
+
   ADMINJS_ROUTE: Joi.string().when('NODE_ENV', {
     is: Joi.string().valid('development'),
     then: Joi.string().default('/admin'),

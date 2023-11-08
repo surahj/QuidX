@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '@repositories/users.repository';
+import { UsersRepository } from './users.repository';
 import { User, Prisma } from '@prisma/postgres/client';
 import { ErrorResponse } from '@common/errors';
 import { UpdateUserDto } from './dto/update-user.dto';
