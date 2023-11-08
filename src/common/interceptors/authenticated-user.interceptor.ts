@@ -7,7 +7,7 @@ import {
   NestInterceptor,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersRepository } from '@repositories/users.repository';
+import { UsersRepository } from '@api/v1/users/users.repository';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 

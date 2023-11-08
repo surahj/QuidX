@@ -23,13 +23,14 @@ import RedisStore from 'connect-redis';
 import * as session from 'express-session';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
+import { AuthenticationMiddleware } from '@common/middlewares/authentication.middleware';
 
 AdminJS.registerAdapter({ Database, Resource });
 
 @Module({
   imports: [
     AdminJsModule.createAdminAsync(adminUIOptions),
-    ConfigModule.forRoot({ validationSchema: envValidator }),
+    ConfigModule.forRoot({ isGlobal: true, validationSchema: envValidator }),
     DatabaseModule,
     UsersModule,
     AuthenticationModule,
@@ -76,6 +77,49 @@ export class AppModule implements NestModule {
             maxAge: 10 * 60 * 60 * 1000, // 10hours
           },
         }),
+      )
+      .forRoutes('*');
+
+    consumer
+      .apply(AuthenticationMiddleware)
+      .exclude(
+        {
+          path: 'api/v1/authentication/user/signup',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/v1/authentication/user/login',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/v1/authentication/user/logout',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/api/v1/authentication/forgot-password',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/v1/authentication/forgot-password/2fa',
+          method: RequestMethod.POST,
+        },
+
+        {
+          path: '/api/v1/authentication/reset-password',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/v1/chat/completions/public',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/v1/rate/crypto',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/api/v1/rate/forex',
+          method: RequestMethod.GET,
+        },
       )
       .forRoutes('*');
   }
