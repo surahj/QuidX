@@ -58,7 +58,11 @@ async function bootstrap() {
     }),
   });
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'https://quidxai.com/',
+    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
+    credentials: true,
+  });
 
   app.setGlobalPrefix('api');
   app.enableVersioning({
