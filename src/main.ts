@@ -59,7 +59,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: 'https://quidxai.com/',
+    origin: ['https://quidxai.com/, http://localhost:3000'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
     credentials: true,
   });
