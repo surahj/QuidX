@@ -58,10 +58,17 @@ async function bootstrap() {
     }),
   });
 
+  // app.enableCors({
+  //   origin: ['https://quidxai.com/, http://localhost:3000'],
+  //   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
+  //   credentials: true,
+  // });
+
   app.enableCors({
-    origin: ['https://quidxai.com/, http://localhost:3000'],
+    origin: ['https://quidx.onrender.com', 'http://localhost:3000'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
     credentials: true,
+    // allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.setGlobalPrefix('api');
