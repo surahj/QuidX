@@ -24,6 +24,7 @@ import * as session from 'express-session';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
 import { AuthenticationMiddleware } from '@common/middlewares/authentication.middleware';
+import { AuthModule } from '@api/v1/auth/auth.module';
 
 AdminJS.registerAdapter({ Database, Resource });
 
@@ -36,6 +37,7 @@ AdminJS.registerAdapter({ Database, Resource });
     AuthenticationModule,
     ChatModule,
     RateModule,
+    AuthModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseLoggerInterceptor },
@@ -80,7 +82,7 @@ export class AppModule implements NestModule {
       )
       .forRoutes('*');
 
-    consumer
+    /* consumer
       .apply(AuthenticationMiddleware)
       .exclude(
         {
@@ -121,6 +123,6 @@ export class AppModule implements NestModule {
           method: RequestMethod.GET,
         },
       )
-      .forRoutes('*');
+      .forRoutes('*'); */
   }
 }

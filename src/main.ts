@@ -14,6 +14,7 @@ import { UsersModule } from '@api/v1/users/users.module';
 import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
+import { AuthModule } from '@api/v1/auth/auth.module';
 
 async function bootstrap() {
   const infoLogRotationTransport = new DailyRotateFile({
@@ -78,7 +79,13 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  const modules = [UsersModule, AuthenticationModule, ChatModule, RateModule];
+  const modules = [
+    UsersModule,
+    AuthenticationModule,
+    ChatModule,
+    RateModule,
+    AuthModule,
+  ];
   SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');
