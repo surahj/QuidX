@@ -65,10 +65,10 @@ async function bootstrap() {
   // });
 
   app.enableCors({
-    origin: '*',
+    origin: ['https://quidx.onrender.com', 'http://localhost:3000'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
+    // allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.setGlobalPrefix('api');
