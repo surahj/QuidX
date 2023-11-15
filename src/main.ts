@@ -68,7 +68,7 @@ async function bootstrap() {
     origin: ['https://quidxai.com', 'http://localhost:3000'],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
     credentials: true,
-    // allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.setGlobalPrefix('api');
