@@ -72,7 +72,7 @@ export class AppModule implements NestModule {
           store: sessionStore,
           cookie: {
             httpOnly: true,
-            sameSite: false,
+            sameSite: 'Lax',
             secure: this.configService.get<string>('NODE_ENV') === 'production',
             maxAge: 10 * 60 * 60 * 1000, // 10hours
           },
