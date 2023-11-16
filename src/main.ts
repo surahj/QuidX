@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerInit } from './swagger';
 import * as winston from 'winston';
+import * as cookieParser from 'cookie-parser';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 import {
   utilities as nestWinstonModuleUtilities,
@@ -14,6 +15,7 @@ import { UsersModule } from '@api/v1/users/users.module';
 import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
+import { AuthModule } from '@api/v1/auth/auth.module';
 
 async function bootstrap() {
   const infoLogRotationTransport = new DailyRotateFile({
@@ -58,11 +60,7 @@ async function bootstrap() {
     }),
   });
 
-  // app.enableCors({
-  //   origin: ['https://quidxai.com/, http://localhost:3000'],
-  //   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
-  //   credentials: true,
-  // });
+  app.use(cookieParser());
 
   app.enableCors({
     origin: ['https://quidxai.com', 'http://localhost:3000'],
@@ -78,7 +76,13 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  const modules = [UsersModule, AuthenticationModule, ChatModule, RateModule];
+  const modules = [
+    UsersModule,
+    AuthenticationModule,
+    ChatModule,
+    RateModule,
+    AuthModule,
+  ];
   SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');

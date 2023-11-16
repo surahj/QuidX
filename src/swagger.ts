@@ -13,10 +13,22 @@ export function SwaggerInit(
   modules?: Function[],
 ) {
   const config = new DocumentBuilder()
-    .setTitle('Nest API')
-    .setDescription('Swagger documentation for Nest API')
+    .setTitle('QuidX API')
+    .setDescription('QuidX documentation')
     .setVersion('1.0')
     .addTag('Api')
+    .addCookieAuth('Authentication')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'Bearer', // This name here is important for matching up with @ApiBearerAuth() in your controller!
+    )
     .build();
 
   const customOptions: SwaggerCustomOptions = {

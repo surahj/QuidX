@@ -24,6 +24,7 @@ import * as session from 'express-session';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
 import { AuthenticationMiddleware } from '@common/middlewares/authentication.middleware';
+import { AuthModule } from '@api/v1/auth/auth.module';
 
 AdminJS.registerAdapter({ Database, Resource });
 
@@ -33,9 +34,10 @@ AdminJS.registerAdapter({ Database, Resource });
     ConfigModule.forRoot({ isGlobal: true, validationSchema: envValidator }),
     DatabaseModule,
     UsersModule,
-    AuthenticationModule,
+    // AuthenticationModule,
     ChatModule,
     RateModule,
+    AuthModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseLoggerInterceptor },
@@ -63,24 +65,24 @@ export class AppModule implements NestModule {
       client: redis.getClient(),
     });
 
-    consumer
-      .apply(
-        session({
-          secret: this.configService.get('APP_SESSION_SECRET'),
-          resave: false,
-          saveUninitialized: false,
-          store: sessionStore,
-          cookie: {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: this.configService.get<string>('NODE_ENV') === 'production',
-            maxAge: 10 * 60 * 60 * 1000, // 10hours
-          },
-        }),
-      )
-      .forRoutes('*');
+    // consumer
+    //   .apply(
+    //     session({
+    //       secret: this.configService.get('APP_SESSION_SECRET'),
+    //       resave: false,
+    //       saveUninitialized: false,
+    //       store: sessionStore,
+    //       cookie: {
+    //         httpOnly: true,
+    //         sameSite: false,
+    //         secure: this.configService.get<string>('NODE_ENV') === 'production',
+    //         maxAge: 10 * 60 * 60 * 1000, // 10hours
+    //       },
+    //     }),
+    //   )
+    //   .forRoutes('*');
 
-    consumer
+    /* consumer
       .apply(AuthenticationMiddleware)
       .exclude(
         {
@@ -121,6 +123,6 @@ export class AppModule implements NestModule {
           method: RequestMethod.GET,
         },
       )
-      .forRoutes('*');
+      .forRoutes('*'); */
   }
 }

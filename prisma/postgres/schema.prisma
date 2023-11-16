@@ -32,6 +32,7 @@ model User {
   isEmailVerified            Boolean?                     @default(false) @map("is_email_verified")
   isPhoneNumberVerified      Boolean?                     @default(false) @map("is_phone_number_verified")
   chats                      Chat[]
+  token                      Token?
   createdAt                  DateTime                     @default(now()) @map("created_at")
   updatedAt                  DateTime                     @updatedAt @map("update_at")
 
@@ -77,5 +78,19 @@ enum Gender {
 enum Role {
   USER
   ADMIN
+}
+
+model Token {
+  pk                          Int     @id @default(autoincrement())
+  id                          String  @unique @default(uuid())
+  userId                      String?  @unique
+  user                        User?     @relation(fields: [userId], references: [id])
+  expiryDate                  DateTime?
+  hashedToken                 String
+  createdAt                   DateTime @default(now()) @map("created_at")
+  updatedAt                   DateTime @updatedAt @map("update_at")
+
+  @@unique([pk, id])
+  @@map("token")
 }
 
