@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerInit } from './swagger';
 import * as winston from 'winston';
+import * as cookieParser from 'cookie-parser';
 import * as DailyRotateFile from 'winston-daily-rotate-file';
 import {
   utilities as nestWinstonModuleUtilities,
@@ -59,11 +60,7 @@ async function bootstrap() {
     }),
   });
 
-  // app.enableCors({
-  //   origin: ['https://quidxai.com/, http://localhost:3000'],
-  //   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
-  //   credentials: true,
-  // });
+  app.use(cookieParser());
 
   app.enableCors({
     origin: ['https://quidxai.com', 'http://localhost:3000'],

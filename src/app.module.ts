@@ -34,7 +34,7 @@ AdminJS.registerAdapter({ Database, Resource });
     ConfigModule.forRoot({ isGlobal: true, validationSchema: envValidator }),
     DatabaseModule,
     UsersModule,
-    AuthenticationModule,
+    // AuthenticationModule,
     ChatModule,
     RateModule,
     AuthModule,
@@ -65,22 +65,22 @@ export class AppModule implements NestModule {
       client: redis.getClient(),
     });
 
-    consumer
-      .apply(
-        session({
-          secret: this.configService.get('APP_SESSION_SECRET'),
-          resave: false,
-          saveUninitialized: false,
-          store: sessionStore,
-          cookie: {
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: this.configService.get<string>('NODE_ENV') === 'production',
-            maxAge: 10 * 60 * 60 * 1000, // 10hours
-          },
-        }),
-      )
-      .forRoutes('*');
+    // consumer
+    //   .apply(
+    //     session({
+    //       secret: this.configService.get('APP_SESSION_SECRET'),
+    //       resave: false,
+    //       saveUninitialized: false,
+    //       store: sessionStore,
+    //       cookie: {
+    //         httpOnly: true,
+    //         sameSite: false,
+    //         secure: this.configService.get<string>('NODE_ENV') === 'production',
+    //         maxAge: 10 * 60 * 60 * 1000, // 10hours
+    //       },
+    //     }),
+    //   )
+    //   .forRoutes('*');
 
     /* consumer
       .apply(AuthenticationMiddleware)

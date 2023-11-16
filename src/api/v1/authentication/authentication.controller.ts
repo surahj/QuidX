@@ -6,6 +6,7 @@ import {
   Req,
   InternalServerErrorException,
   Get,
+  Header,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
@@ -50,6 +51,7 @@ export class AuthenticationController {
   }
 
   @Post('user/login')
+  // @Header('Access-Control-Allow-Origin', '*')
   public async loginUser(@Req() req: Request, @Body() payload: loginDto) {
     const user = await this.authenticationService.loginUser(payload);
     this.createSession(req)({

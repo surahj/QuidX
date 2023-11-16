@@ -8,13 +8,15 @@ import {
   Param,
   Delete,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { UpdateChatTitleDto } from './dto/update-title.chat.dto';
 import { PublicChatDto } from './dto/public-chat.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 // import { AuthenticatedUserInterceptor } from '@common/interceptors/authenticated-user.interceptor';
 
@@ -24,6 +26,9 @@ import { PublicChatDto } from './dto/public-chat.dto';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  // @ApiBearerAuth('Bearer')
+  @ApiCookieAuth('Authentication')
+  @UseGuards(JwtAuthGuard)
   @Post('completions')
   async getCompletions(@Body() payload: UpdateChatDto) {
     const answer = await this.chatService.getCompletions(payload);
@@ -46,9 +51,12 @@ export class ChatController {
     };
   }
 
+  @ApiCookieAuth('Authentication')
+  @UseGuards(JwtAuthGuard)
   @Post()
-  public async createChat(@Req() req: Request) {
-    const userSession = req.session['user'];
+  public async createChat(@Req() req) {
+    const userSession = { id: req?.user.id, email: req?.user?.email };
+    console.log('userSession', userSession);
     const data = await this.chatService.createChat(userSession);
 
     return {
@@ -69,11 +77,12 @@ export class ChatController {
     };
   }
 
+  @ApiCookieAuth('Authentication')
+  @UseGuards(JwtAuthGuard)
   @Get()
-  public async getChats(@Req() req: Request) {
-    const { id: userId } = req.session['user'];
-    console.log(userId);
-    const chats = await this.chatService.getChats(userId);
+  public async getChats(@Req() req) {
+    const userSession = { id: req?.user.id, email: req?.user?.email };
+    const chats = await this.chatService.getChats(userSession.id);
 
     return {
       statusCode: 200,
@@ -87,7 +96,6 @@ export class ChatController {
     @Param('chatId') chatId: string,
     @Body() payload: UpdateChatTitleDto,
   ) {
-    console.log(payload.title);
     const data = await this.chatService.updateChatTitle(chatId, payload.title);
 
     return {

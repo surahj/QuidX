@@ -109,7 +109,7 @@ export class ChatService {
         );
       }
 
-      throw new InternalServerErrorException('internal server error');
+      throw new InternalServerErrorException('internal servers error');
     }
   }
 
