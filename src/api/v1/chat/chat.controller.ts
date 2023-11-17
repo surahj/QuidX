@@ -22,12 +22,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('chat')
 @Controller('chat')
+@ApiBearerAuth('Bearer')
 // @UseInterceptors(AuthenticatedUserInterceptor)
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  // @ApiBearerAuth('Bearer')
-  @ApiCookieAuth('Authentication')
+  // @ApiCookieAuth('Authentication')
   @UseGuards(JwtAuthGuard)
   @Post('completions')
   async getCompletions(@Body() payload: UpdateChatDto) {
@@ -51,7 +51,7 @@ export class ChatController {
     };
   }
 
-  @ApiCookieAuth('Authentication')
+  // @ApiCookieAuth('Authentication')
   @UseGuards(JwtAuthGuard)
   @Post()
   public async createChat(@Req() req) {
@@ -77,10 +77,12 @@ export class ChatController {
     };
   }
 
-  @ApiCookieAuth('Authentication')
+  // @ApiCookieAuth('Authentication')
+  @ApiBearerAuth('Bearer')
   @UseGuards(JwtAuthGuard)
   @Get()
   public async getChats(@Req() req) {
+    console.log('user');
     const userSession = { id: req?.user.id, email: req?.user?.email };
     const chats = await this.chatService.getChats(userSession.id);
 
