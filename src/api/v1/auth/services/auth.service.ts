@@ -31,18 +31,14 @@ export class AuthService {
     return user;
   }
 
-  async getCookieWithJwtAccessToken(payload: { id: string; email: string }) {
+  async getJwtAccessToken(payload: { id: string; email: string }) {
     const token = this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
       expiresIn: `${this.configService.get(
         'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}`,
+      )}s`,
     });
-    const cookie = `Authentication=${token}; HttpOnly; Path=/; SameSite=None; Secure; Max-Age=${this.configService.get(
-      'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-    )}`;
-    console.log('cookie', cookie);
-    return { cookie, token };
+    return token;
   }
 
   async getCookieWithJwtRefreshToken(payload: { id: string; email: string }) {
@@ -94,6 +90,8 @@ export class AuthService {
   // }
 
   async validateUserPayload(payload): Promise<User> {
+    console.log('validating user');
+    console.log('payload', payload.id);
     const user: User = await this.userService.getUserById(payload.id);
     if (user?.id == payload.id && user?.email == payload.email) {
       return user;

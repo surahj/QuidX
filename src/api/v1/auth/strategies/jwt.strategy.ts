@@ -9,12 +9,12 @@ import { Request } from 'express';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
     super({
-      // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.Authentication;
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromExtractors([
+      //   (request: Request) => {
+      //     return request?.cookies?.Authentication;
+      //   },
+      // ]),
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
     });
   }
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log(payload);
     const user = await this.authService.validateUserPayload(payload);
     if (!user) {
-      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Invalid tokens', HttpStatus.UNAUTHORIZED);
     }
     console.log(user);
     return user;

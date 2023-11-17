@@ -48,21 +48,19 @@ export class AuthController {
   async login(@Body() data: LoginDto, @Req() req) {
     const user = req.user;
     const payload = { id: user.id, email: user.email };
-    const accessTokenCookie =
-      await this.authService.getCookieWithJwtAccessToken(payload);
+    const accessToken = await this.authService.getJwtAccessToken(payload);
 
-    const refreshTokenCookie =
-      await this.authService.getCookieWithJwtRefreshToken(payload);
+    // const refreshTokenCookie =
+    //   await this.authService.getCookieWithJwtRefreshToken(payload);
 
-    const tokenData = { token: refreshTokenCookie.token, userId: user.id };
-    await this.tokenService.createRefreshToken(tokenData);
-    await req.res.setHeader('Set-Cookie', [
-      accessTokenCookie.cookie,
-      // refreshTokenCookie.cookie,
-    ]);
+    // const tokenData = { token: refreshTokenCookie.token, userId: user.id };
+    // await this.tokenService.createRefreshToken(tokenData);
+    await req.res.setHeader('Authorization', `Bearer ${accessToken}`);
+
     return {
-      accessToken: accessTokenCookie.token,
-      // refreshToken: refreshTokenCookie.token,
+      message: 'User login successful',
+      statusCode: 200,
+      token: accessToken,
     };
   }
 
@@ -70,6 +68,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Clear user login details and logout' })
   @ApiResponse({ status: 200, description: 'Logout successufl' })
   async signout(@Req() req) {
+    await req.res.setHeader('Authorization', 'Bearer ');
     req.res.setHeader('Set-Cookie', this.authService.getCookiesForLogOut());
   }
 }
