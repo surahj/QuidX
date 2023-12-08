@@ -21,9 +21,3 @@ export interface VerifyTokenOptions {
 }
 
 export type TokenData = { tokenType: TokenType } & DynamicObject;
-
-export interface VerifyOtpParams {
-  /** key to retrieve the otp reference in cache */
-  key: string;
-  otp: string;
-}
