@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/signup.dto';
+import { SignUpDto } from '../dto/signup.dto';
 import { User } from '@prisma/postgres/client';
 import { UsersService } from '../../users/users.service';
 import { ErrorResponse } from '@common/errors';
@@ -61,7 +61,7 @@ export class AuthService {
     ];
   }
 
-  async signUp(user: CreateUserDto): Promise<User> {
+  async signUp(user: SignUpDto): Promise<User> {
     user.email = String(user.email).toLowerCase();
     const existingUserWithEmail = await this.userService.getUserByEmail(
       user.email,
@@ -76,8 +76,13 @@ export class AuthService {
     return await this.userService.createUser({
       email: user.email,
       password: hashedPassword,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      profile: {
+        create: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      },
     });
   }
 

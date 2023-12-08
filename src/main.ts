@@ -12,7 +12,6 @@ import {
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { UsersModule } from '@api/v1/users/users.module';
-import { AuthenticationModule } from '@api/v1/authentication/authentication.module';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
 import { AuthModule } from '@api/v1/auth/auth.module';
@@ -76,13 +75,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  const modules = [
-    UsersModule,
-    AuthenticationModule,
-    ChatModule,
-    RateModule,
-    AuthModule,
-  ];
+  const modules = [UsersModule, ChatModule, RateModule, AuthModule];
   SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');

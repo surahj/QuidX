@@ -6,11 +6,6 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  email: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   firstName: string;
 
   @ApiProperty()
@@ -24,16 +19,16 @@ export class CreateUserDto {
   @IsNotEmpty()
   gender: Gender;
 
-  @ApiProperty()
-  @IsString()
-  avatar: string;
+  // @ApiProperty()
+  // @IsString()
+  // avatar: string;
 
-  @ApiProperty({
-    example: 'YYYY-MM-DD',
-  })
-  @IsString()
-  @IsNotEmpty()
-  dateOfBirth: string;
+  // @ApiProperty({
+  //   example: 'YYYY-MM-DD',
+  // })
+  // @IsString()
+  // @IsNotEmpty()
+  // dateOfBirth: string;
 
   @ApiProperty()
   @IsString()

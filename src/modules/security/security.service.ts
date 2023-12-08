@@ -6,19 +6,14 @@ import {
   GenerateTokenOptions,
   TokenData,
   VerifyTokenOptions,
-  VerifyOtpParams,
 } from './security.interface';
 import { ErrorResponse } from '@common/errors';
-import RedisClient from '@database/redis';
 
 @Injectable()
 export class SecurityService {
   private readonly logger = new Logger(SecurityService.name);
-  cache: RedisClient;
 
-  constructor(private readonly jwtService: JwtService) {
-    this.cache = new RedisClient();
-  }
+  constructor(private readonly jwtService: JwtService) {}
 
   public async hashPassword(password: string): Promise<string> {
     try {
@@ -84,26 +79,4 @@ export class SecurityService {
       throw new ErrorResponse(message, 401);
     }
   };
-
-  public generateOTP = async (userId: string): Promise<string> => {
-    // Generate a random number between 100000 and 999999 (inclusive)
-    const min = 100000;
-    const max = 999999;
-    const otp = Math.floor(Math.random() * (max - min + 1)) + min;
-    // Convert the number to a string and pad it with leading zeros if necessary
-    const otpString = otp.toString().padStart(6, '0');
-    await this.cache.set(userId, otpString, 240); //ttl in seconds, expires in 4min
-    return otpString;
-  };
-
-  public async isOtpValid({ otp, key }: VerifyOtpParams) {
-    const otpMetaDataInCacheString: string = await this.cache.get(key);
-
-    if (otpMetaDataInCacheString == otp) {
-      this.cache.del(key);
-      return true;
-    }
-
-    return false;
-  }
 }

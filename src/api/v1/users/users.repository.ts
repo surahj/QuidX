@@ -14,9 +14,18 @@ export class UsersRepository {
     return this.postgresPrismaService.user.findFirst(query);
   }
 
-  public async findById(id: string) {
+  public async findById(
+    id: string,
+    options?: Partial<{
+      /**  if `true` include profile from profile table that is related to this user (default is `false`)  */
+      includeProfile: boolean;
+    }>,
+  ) {
     return this.postgresPrismaService.user.findUnique({
       where: { id },
+      include: {
+        profile: options?.includeProfile || false,
+      },
     });
   }
 
@@ -26,5 +35,37 @@ export class UsersRepository {
 
   public async update(query: Prisma.UserUpdateArgs) {
     return this.postgresPrismaService.user.update(query);
+  }
+
+  public async findUserProfileByIdAndUpdate(
+    id: string,
+    data: Prisma.ProfileUpdateInput,
+    options?: Partial<{
+      /**  if `true` include user from users table that is related to this profile (default is `false`)  */
+      includeUser: boolean;
+    }>,
+  ) {
+    return this.postgresPrismaService.profile.update({
+      where: { id },
+      data,
+      include: {
+        user: options?.includeUser || false,
+      },
+    });
+  }
+
+  public async getUserProfile(
+    id: string,
+    options?: Partial<{
+      /**  if `true` include user from users table that is related to this profile (default is `false`)  */
+      includeUser: boolean;
+    }>,
+  ) {
+    return this.postgresPrismaService.profile.findMany({
+      where: { id },
+      include: {
+        user: options?.includeUser || false,
+      },
+    });
   }
 }

@@ -19,18 +19,10 @@ model User {
   email                      String                       @unique
   password                   String
   role                       Role                         @default(USER)
-  phoneNumber                String?                      @unique @map("phone_number")
-  firstName                  String?
-  lastName                  String?
-  avatar                     String?
   isBlocked                  Boolean                      @default(false)
-  gender                     Gender?
-  dateOfBirth                DateTime?
-  city                       String?
-  stateOfResidence           String?                      @map("state_of_residence")
-  lga                        String?
   isEmailVerified            Boolean?                     @default(false) @map("is_email_verified")
-  isPhoneNumberVerified      Boolean?                     @default(false) @map("is_phone_number_verified")
+  profileId                  String                       @unique
+  profile                    Profile                      @relation(fields: [profileId], references: [id])
   chats                      Chat[]
   token                      Token?
   createdAt                  DateTime                     @default(now()) @map("created_at")
@@ -39,6 +31,27 @@ model User {
   @@map("users")
   @@index(fields: [email])
 }
+
+model Profile {
+  pk               Int       @id @default(autoincrement())
+  id               String    @unique @default(uuid())
+  email            String?   @unique
+  avatar           String?
+  phoneNumber      String?   @map("phone_number")
+  firstName        String?   @map("first_name")
+  lastName         String?   @map("last_name")
+  gender           Gender?
+  dateOfBirth      DateTime?
+  city             String?
+  stateOfResidence String?   @map("state_of_residence")
+  isNotify         Boolean?  @default(false)
+  user             User?
+
+
+  @@unique([pk, id])
+  @@map("profiles")
+}
+
 
 model Chat {
   pk                          Int       @id @default(autoincrement())
