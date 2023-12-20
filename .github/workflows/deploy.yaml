@@ -23,5 +23,6 @@ jobs:
           git pull origin main
           git status
           yarn install --only=prod --frozen-lockfile
+          npx prisma migrate deploy --schema prisma/postgres/schema.prisma
           yarn build
 
