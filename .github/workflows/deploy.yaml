@@ -23,5 +23,5 @@ jobs:
           git pull origin main
           git status
           yarn install --only=prod --frozen-lockfile
-          yarn build && yarn install --production
+          yarn build
 
