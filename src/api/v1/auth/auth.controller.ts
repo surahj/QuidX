@@ -14,7 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { TokenService } from './services/token.services';
 
-@ApiTags('Authentication Manager')
+@ApiTags('Authentications Manager.')
 @Controller('auth')
 export class AuthController {
   constructor(
