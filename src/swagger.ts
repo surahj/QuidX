@@ -35,7 +35,7 @@ export function SwaggerInit(
     swaggerOptions: {
       persistAuthorization: true,
     },
-    customSiteTitle: 'Nest Api',
+    customSiteTitle: 'QuidX API',
     useGlobalPrefix: false,
   };
 

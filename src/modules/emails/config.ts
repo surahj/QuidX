@@ -7,6 +7,7 @@ dotenv.config();
 
 const COMPANY_NAME = process.env.COMPANY_NAME;
 const COMPANY_EMAIL = process.env.COMPANY_EMAIL;
+const BASEURL = process.env.BASEURL;
 const COMPANY_EMAIL_PASSWORD = process.env.COMPANY_EMAIL_PASSWORD;
 
 const NGIMDOCK_LINKEDIN = process.env.NGIMDOCK_LINKEDIN;
@@ -14,11 +15,20 @@ const NGIMDOCK_LINKEDIN = process.env.NGIMDOCK_LINKEDIN;
 const SERVER_APP_HOST = process.env.SERVER_APP_HOST;
 const SERVER_APP_PORT = process.env.SERVER_APP_PORT;
 
+// export const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: COMPANY_EMAIL,
+//     pass: COMPANY_EMAIL_PASSWORD,
+//   },
+// });
+
 export const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'sandbox.smtp.mailtrap.io',
+  port: 2525,
   auth: {
-    user: COMPANY_EMAIL,
-    pass: COMPANY_EMAIL_PASSWORD,
+    user: '26f44159d9861d',
+    pass: '83a08c54792f1b',
   },
 });
 
@@ -44,7 +54,7 @@ export const getEmailWelcomeOptions = ({
         button: {
           color: '#22BC66',
           text: 'Confirm your account',
-          link: `${SERVER_APP_HOST}:${SERVER_APP_PORT}/auth/email/verify/${token}`,
+          link: `${BASEURL}/api/v1/auth/verify/${token}`,
         },
       },
       outro: `Need help, or have questions? Just reply to this email, we'd love to help.
@@ -143,17 +153,18 @@ export const getEmailToResetPasswordOptions = ({
   email,
   username,
   token,
+  callbackUrl,
 }: ReceiverEmailData): EmailOptionsType => {
   const template = {
     body: {
       name: username || '',
       intro: `Click on this button to reset your password.`,
       action: {
-        instructions: `This reset password link will expire in in 8 min.`,
+        instructions: `This reset password link will expire in in 5 min.`,
         button: {
           color: '#22BC66',
           text: 'Reset your password',
-          link: `${SERVER_APP_HOST}:${SERVER_APP_PORT}/api/v1/authentication/forgot-password/${token}`,
+          link: `${callbackUrl}?token=${token}`,
         },
       },
       outro: `Need help, or have questions? Just reply to this email, we'd love to help.
@@ -164,13 +175,13 @@ export const getEmailToResetPasswordOptions = ({
     },
   };
 
-  const welcomeEmailTemplate = MailGenerator.generate(template);
+  const resetPasswordTemplate = MailGenerator.generate(template);
 
   return {
     from: COMPANY_EMAIL,
     to: email,
     subject: `Reset your password`,
-    html: welcomeEmailTemplate,
+    html: resetPasswordTemplate,
   };
 };
 
