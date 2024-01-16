@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "nest build",
-    "postinstall": "yarn run prisma:postgres:dbpush",
+    "postinstall": "yarn run prisma:generate:postgres_client",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,7 +20,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postgres:migrate:dev": "prisma migrate dev --schema prisma/postgres/schema.prisma --name ",
+    "postgres:migrate:dev": "prisma migrate dev --schema prisma/postgres/schema.prisma --preview-feature --name ",
     "postgres:migrate:dev:create": "prisma migrate dev --schema prisma/postgres/schema.prisma --create-only",
     "postgres:migrate:deploy": "npx prisma migrate deploy --schema prisma/postgres/schema.prisma --preview-feature",
     "prisma": "prisma",
