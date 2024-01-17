@@ -8,20 +8,30 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  public async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  public async createUser(
+    data: Prisma.UserCreateInput,
+  ): Promise<User & { profile: Profile }> {
     return this.usersRepository.create({
       data,
-    }) as Promise<User>;
+      include: {
+        profile: true,
+      },
+    }) as Promise<User & { profile: Profile }>;
   }
 
-  public async getUserById(id: string): Promise<User> {
+  public async getUserById(id: string): Promise<User & { profile: Profile }> {
     return this.usersRepository.findById(id, { includeProfile: true });
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
+  public async getUserByEmail(
+    email: string,
+  ): Promise<User & { profile: Profile }> {
     return this.usersRepository.find({
       where: { email },
-    }) as Promise<User>;
+      include: {
+        profile: true,
+      },
+    }) as Promise<User & { profile: Profile }>;
   }
 
   public async getUserByIdAndUpdate(

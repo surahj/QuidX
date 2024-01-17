@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresPrismaService } from '@database/postgres-prisma.service';
-import { Prisma } from '@prisma/postgres/client';
+import { Prisma, Token } from '@prisma/postgres/client';
 import * as crypto from 'crypto';
+import { CreateToken as IToken } from '../dto/createToken';
 
 @Injectable()
 export class TokenService {
@@ -29,10 +30,31 @@ export class TokenService {
 
     return await this.create({
       data: {
-        hashedToken: hashedRefreshToken,
+        token: hashedRefreshToken,
         user: { connect: { id: tokenData.userId } },
       },
     });
+  }
+
+  async createToken(data: IToken): Promise<Token> {
+    const { userId, token, expiryDate } = data;
+
+    const tokenData = await this.postgresPrismaService.token.upsert({
+      where: {
+        userId: userId,
+      },
+      update: {
+        token: token,
+        expiryDate: expiryDate,
+      },
+      create: {
+        userId: userId,
+        token: token,
+        expiryDate: expiryDate,
+      },
+    });
+
+    return tokenData;
   }
 
   public async find(query: Prisma.TokenFindFirstArgs) {
@@ -42,6 +64,15 @@ export class TokenService {
   public async findTokenByUserId(userId: string) {
     return this.postgresPrismaService.token.findUnique({
       where: { userId },
+    });
+  }
+
+  public async findTokenByTokenStr(token: string) {
+    return this.postgresPrismaService.token.findFirst({
+      where: { token },
+      include: {
+        user: true,
+      },
     });
   }
 

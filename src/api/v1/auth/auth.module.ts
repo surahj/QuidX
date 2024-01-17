@@ -9,6 +9,7 @@ import { LocalStrategy } from './strategies/local-strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenService } from './services/token.services';
 import { DatabaseModule } from '@database/database.module';
+import { EmailModule } from '@modules/emails/email.module';
 
 @Module({
   controllers: [AuthController],
@@ -24,6 +25,7 @@ import { DatabaseModule } from '@database/database.module';
     UsersModule,
     PassportModule,
     DatabaseModule,
+    EmailModule,
   ],
 })
 export class AuthModule {}
