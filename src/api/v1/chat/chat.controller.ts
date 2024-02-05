@@ -11,7 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { UpdateChatDto } from './dto/update-chat.dto';
 import { UpdateChatTitleDto } from './dto/update-title.chat.dto';
@@ -28,6 +33,9 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   // @ApiCookieAuth('Authentication')
+  @ApiOperation({
+    summary: 'send a message/question with chatId or without chatId',
+  })
   @UseGuards(JwtAuthGuard)
   @Post('completions')
   async getCompletions(@Req() req, @Body() payload: UpdateChatDto) {
