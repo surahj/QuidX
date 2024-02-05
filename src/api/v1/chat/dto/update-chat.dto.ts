@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateChatDto {
-  @ApiProperty()
+  @ApiProperty({ required: false, description: 'Optional chat ID' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   chatId: string;
 
   @ApiProperty()
