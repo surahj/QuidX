@@ -70,7 +70,7 @@ export class ChatService {
   ) {
     const prompt = `You are a crypto and investment AI. You will be provided with questions input by users.
      The questions will range from cryptocurrency trading, investment, forex, and stock trading. Respond as informative, humanly, and emotionally possible. 
-     The maximum token you can expend is 500. Break the answer into different sections and present the sections in HTML format only without the <html> and <body> tags. give bold, list and spacing where neccessary`;
+     The maximum token you can expend is 500. Break the answer into different sections. bold, list, add new line, header and spacing where neccessary and present the sections in HTML format only without the <html> and <body> tags.`;
 
     const titleResponse = await this.openai.chat.completions.create({
       messages: [
