@@ -30,8 +30,9 @@ export class ChatController {
   // @ApiCookieAuth('Authentication')
   @UseGuards(JwtAuthGuard)
   @Post('completions')
-  async getCompletions(@Body() payload: UpdateChatDto) {
-    const answer = await this.chatService.getCompletions(payload);
+  async getCompletions(@Req() req, @Body() payload: UpdateChatDto) {
+    const userSession = { id: req?.user.id, email: req?.user?.email };
+    const answer = await this.chatService.getCompletions(payload, userSession);
 
     return {
       statusCode: 200,

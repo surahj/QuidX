@@ -64,11 +64,34 @@ export class ChatService {
     }
   }
 
-  public async getCompletions({ question, chatId }: UpdateChatDto) {
+  public async getCompletions(
+    { question, chatId }: UpdateChatDto,
+    userSession: { id: string; email: string },
+  ) {
     const prompt = `You are a crypto and investment AI. You will be provided with questions input by users.
      The questions will range from cryptocurrency trading, investment, forex, and stock trading. Respond as informative, humanly, and emotionally possible. 
-     The maximum token you can expend is 500. Break the answer into different sections and present the sections in HTML format without the <html> and <body> tags.`;
+     The maximum token you can expend is 500. Break the answer into different sections, give bold, list and spacing if necessary, and present the sections in HTML format only without the <html> and <body> tags.`;
 
+    const titleResponse = await this.openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content:
+            'you will be provided with a question, generate a nice and well defined title from the question. The title should be 3 to 4 words without quotes',
+        },
+        { role: 'user', content: question },
+      ],
+      model: 'gpt-3.5-turbo-1106',
+      temperature: 0.2,
+      max_tokens: 15,
+    });
+
+    const title = titleResponse.choices[0].message.content;
+
+    if (!chatId) {
+      const newChat = await this.createChat(userSession, title);
+      chatId = newChat.id;
+    }
     await this.chatRepository.createMessage(chatId, 'user', question);
     const chatHistory =
       await this.chatRepository.getMessagesByChatIdOrderedByTimestamp(chatId);
@@ -113,12 +136,16 @@ export class ChatService {
     }
   }
 
-  public async createChat(userSession: { id: string; email: string }) {
+  public async createChat(
+    userSession: { id: string; email: string },
+    title?: string,
+  ) {
     const chat = await this.chatRepository.create({
       data: {
         user: {
           connect: { id: userSession.id },
         },
+        title: title || 'New Chat',
       },
     });
 
