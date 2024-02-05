@@ -70,19 +70,19 @@ export class ChatService {
   ) {
     const prompt = `You are a crypto and investment AI. You will be provided with questions input by users.
      The questions will range from cryptocurrency trading, investment, forex, and stock trading. Respond as informative, humanly, and emotionally possible. 
-     The maximum token you can expend is 500. Break the answer into different sections, give bold, list and spacing if necessary, and present the sections in HTML format only without the <html> and <body> tags.`;
+     The maximum token you can expend is 500. Break the answer into different sections and present the sections in HTML format only without the <html> and <body> tags. give bold, list and spacing where neccessary`;
 
     const titleResponse = await this.openai.chat.completions.create({
       messages: [
         {
           role: 'system',
           content:
-            'you will be provided with a question, generate a nice and well defined title from the question. The title should be 3 to 4 words without quotes',
+            'you will be provided with a question, generate a nice plain text title from the question. The title should be 3 to 4 words without any quotes',
         },
         { role: 'user', content: question },
       ],
       model: 'gpt-3.5-turbo-1106',
-      temperature: 0.2,
+      temperature: 0.3,
       max_tokens: 15,
     });
 
