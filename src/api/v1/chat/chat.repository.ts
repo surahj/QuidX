@@ -23,12 +23,12 @@ export class ChatRepository {
   public async findChatByUserId(userId: string) {
     return this.postgresPrismaService.chat.findMany({
       where: { userId },
+      orderBy: {
+        createdAt: 'desc',
+      },
       select: {
         id: true,
         title: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     });
   }
