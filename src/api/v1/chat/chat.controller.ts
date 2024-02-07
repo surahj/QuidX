@@ -95,7 +95,6 @@ export class ChatController {
   @UseGuards(JwtAuthGuard)
   @Get()
   public async getChats(@Req() req) {
-    console.log('user');
     const userSession = { id: req?.user.id, email: req?.user?.email };
     const chats = await this.chatService.getChats(userSession.id);
 
