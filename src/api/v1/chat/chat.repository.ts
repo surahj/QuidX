@@ -27,6 +27,9 @@ export class ChatRepository {
         id: true,
         title: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
