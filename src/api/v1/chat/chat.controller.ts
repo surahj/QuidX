@@ -40,12 +40,16 @@ export class ChatController {
   @Post('completions')
   async getCompletions(@Req() req, @Body() payload: UpdateChatDto) {
     const userSession = { id: req?.user.id, email: req?.user?.email };
-    const answer = await this.chatService.getCompletions(payload, userSession);
+    const data = await this.chatService.getCompletions(payload, userSession);
 
     return {
       statusCode: 200,
       message: 'success',
-      data: { question: payload.question, answer },
+      data: {
+        question: payload.question,
+        answer: data.content,
+        chatId: data.chatId,
+      },
     };
   }
 

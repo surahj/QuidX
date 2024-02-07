@@ -72,23 +72,21 @@ export class ChatService {
      The questions will range from cryptocurrency trading, investment, forex, and stock trading. Respond as informative, humanly, and emotionally possible. 
      The maximum token you can expend is 500. Break the answer into different sections. bold, list, add new line, header and spacing where neccessary and present the sections in HTML format only without the <html> and <body> tags.`;
 
-    const titleResponse = await this.openai.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content:
-            'you will be provided with a question, generate a nice plain text title from the question. The title should be 3 to 4 words without any quotes',
-        },
-        { role: 'user', content: question },
-      ],
-      model: 'gpt-3.5-turbo-1106',
-      temperature: 0.3,
-      max_tokens: 15,
-    });
-
-    const title = titleResponse.choices[0].message.content;
-
     if (!chatId) {
+      const titleResponse = await this.openai.chat.completions.create({
+        messages: [
+          {
+            role: 'system',
+            content:
+              'you will be provided with a question, generate a nice plain text title from the question. The title should be 3 to 4 words without any quotes',
+          },
+          { role: 'user', content: question },
+        ],
+        model: 'gpt-3.5-turbo-1106',
+        temperature: 0.3,
+        max_tokens: 15,
+      });
+      const title = titleResponse.choices[0].message.content;
       const newChat = await this.createChat(userSession, title);
       chatId = newChat.id;
     }
@@ -120,7 +118,7 @@ export class ChatService {
         response.content,
       );
 
-      return chat.content;
+      return { content: chat.content, chatId };
     } catch (error) {
       this.logger.error(error);
       if (error.code === 'context_length_exceeded') {
