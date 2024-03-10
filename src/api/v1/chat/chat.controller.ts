@@ -25,7 +25,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 // import { AuthenticatedUserInterceptor } from '@common/interceptors/authenticated-user.interceptor';
 
-@ApiTags('Chat')
+@ApiTags('Chat Management')
 @Controller('chat')
 @ApiBearerAuth('Bearer')
 // @UseInterceptors(AuthenticatedUserInterceptor)
