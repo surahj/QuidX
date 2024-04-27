@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsString,
   IsStrongPassword,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -16,11 +17,23 @@ export class SignUpDto {
   email: string;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
-  @IsStrongPassword()
-  @MaxLength(120)
-  @MinLength(8)
+  @IsString()
+  @Matches(/(?=.*?[A-Z])/, {
+    message: 'Password must contain at least one uppercase',
+  })
+  @Matches(/(?=.*?[a-z])/, {
+    message: 'Password must contain at least one lowercase',
+  })
+  @Matches(/(?=.*?[0-9])/, {
+    message: 'Password must contain at least one digit',
+  })
+  @Matches(/(?=.*?[ #?!@$%^&*-.])/, {
+    message: 'Password must contain at least one special character',
+  })
+  @Matches(/.{8,}/, {
+    message: 'Password must contain at least 8 digits',
+  })
   password: string;
 
   @ApiProperty()
