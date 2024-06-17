@@ -61,9 +61,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   async login(@Body() data: LoginDto, @Req() req) {
-    const user = req.user;
-    const payload = { id: user.id, email: user.email };
-    const accessToken = await this.authService.getJwtAccessToken(payload);
+    const { id, email } = req.user;
+    const accessToken = await this.authService.getJwtAccessToken({ id, email });
 
     // const refreshTokenCookie =
     //   await this.authService.getCookieWithJwtRefreshToken(payload);
@@ -76,6 +75,7 @@ export class AuthController {
       message: 'User login successful',
       statusCode: 200,
       token: accessToken,
+      data: { userId: id },
     };
   }
 
