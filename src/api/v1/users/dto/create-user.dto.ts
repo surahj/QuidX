@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+} from 'class-validator';
 import { Gender } from '@prisma/postgres/client';
 
 export class CreateUserDto {
@@ -41,4 +47,16 @@ export class CreateUserDto {
   @ApiProperty()
   @IsString()
   phoneNumber: string;
+}
+
+export class createGuestDto {
+  @ApiProperty()
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  message?: string;
 }

@@ -32,6 +32,18 @@ model User {
   @@index(fields: [email])
 }
 
+model Guest {
+  pk                         Int                          @id @default(autoincrement())
+  id                         String                       @unique @default(uuid())
+  email                      String
+  message                    String?                      
+
+  createdAt                  DateTime                     @default(now()) @map("created_at")
+  updatedAt                  DateTime                     @updatedAt @map("update_at")
+
+  @@map("guests")
+}
+
 model Profile {
   pk               Int       @id @default(autoincrement())
   id               String    @unique @default(uuid())
@@ -99,7 +111,7 @@ model Token {
   userId                      String?  @unique
   user                        User?     @relation(fields: [userId], references: [id])
   expiryDate                  DateTime?
-  token                       String @unique
+  token                       String
   createdAt                   DateTime @default(now()) @map("created_at")
   updatedAt                   DateTime @updatedAt @map("update_at")
 

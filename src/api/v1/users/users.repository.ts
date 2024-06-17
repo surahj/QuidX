@@ -10,6 +10,10 @@ export class UsersRepository {
     return this.postgresPrismaService.user.create(query);
   }
 
+  public async createGuest(query: Prisma.GuestCreateArgs) {
+    return this.postgresPrismaService.guest.create(query);
+  }
+
   public async find(query: Prisma.UserFindFirstArgs) {
     return this.postgresPrismaService.user.findFirst(query);
   }

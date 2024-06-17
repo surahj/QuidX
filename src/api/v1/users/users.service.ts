@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User, Prisma, Profile } from '@prisma/postgres/client';
+import { User, Prisma, Profile, Guest } from '@prisma/postgres/client';
 import { ErrorResponse } from '@common/errors';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -17,6 +17,12 @@ export class UsersService {
         profile: true,
       },
     }) as Promise<User & { profile: Profile }>;
+  }
+
+  public async createGuest(data: Prisma.GuestCreateInput): Promise<Guest> {
+    return this.usersRepository.createGuest({
+      data,
+    }) as Promise<Guest>;
   }
 
   public async getUserById(id: string): Promise<User & { profile: Profile }> {
