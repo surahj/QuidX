@@ -13,3 +13,15 @@ export class CreateToken {
   @IsNotEmpty()
   userId: string;
 }
+
+export class ResendTokenDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  callbackUrl: string;
+}

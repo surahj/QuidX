@@ -1,6 +1,6 @@
 import { Match } from '@common/decorators/match.decorator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUrl, Matches } from 'class-validator';
 
 export class SignUpDto {
   @ApiProperty()
@@ -44,4 +44,9 @@ export class SignUpDto {
   @IsString()
   @IsNotEmpty()
   lastName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsUrl()
+  callbackUrl: string;
 }

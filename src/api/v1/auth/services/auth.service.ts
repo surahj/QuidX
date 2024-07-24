@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
@@ -21,7 +22,7 @@ import { generateConfirmationCode } from '../utils/confirmationCode';
 import { TokenService } from './token.services';
 import { minutesFromNow } from '../utils/timeUtils';
 import { ERROR } from '../error';
-import { ResetPasswordDto } from '../dto';
+import { ResendTokenDto, ResetPasswordDto } from '../dto';
 
 @Injectable()
 export class AuthService {
@@ -80,7 +81,16 @@ export class AuthService {
     ];
   }
 
+  async resendToken({ email, callbackUrl }: ResendTokenDto) {
+    this.logger.log('resend token');
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) throw new NotFoundException(ERROR.EMAIL_NOT_FOUND);
+
+    this.generateUserConfirmation(user, callbackUrl);
+  }
+
   async signUp(user: SignUpDto): Promise<User> {
+    const { callbackUrl } = user;
     user.email = String(user.email).toLowerCase();
     const existingUserWithEmail = await this.userService.getUserByEmail(
       user.email,
@@ -105,14 +115,17 @@ export class AuthService {
     });
 
     if (createdUser) {
-      this.generateUserConfirmation(createdUser);
+      this.generateUserConfirmation(createdUser, callbackUrl);
       return createdUser;
     } else {
       throw new ConflictException(ERROR.USER_NOT_CREATED);
     }
   }
 
-  async generateUserConfirmation(createdUser: User & { profile: Profile }) {
+  async generateUserConfirmation(
+    createdUser: User & { profile: Profile },
+    callbackUrl: string,
+  ) {
     this.logger.log('Generate user confirmation token and send to email');
     const token = generateConfirmationCode();
     const tokenData: Token = await this.tokenService.createToken({
@@ -125,6 +138,7 @@ export class AuthService {
         email: createdUser.email,
         username: createdUser.profile.firstName,
         token: tokenData.token,
+        callbackUrl,
       });
     } catch (error) {
       this.logger.log(error.message);
@@ -146,27 +160,20 @@ export class AuthService {
     }
   }
 
-  async verify(tokenStr: string): Promise<string> {
+  async verify(tokenStr: string): Promise<void> {
     this.logger.log('verify token....');
-    try {
-      const token = await this.tokenService.findTokenByTokenStr(tokenStr);
+    const token = await this.tokenService.findTokenByTokenStr(tokenStr);
 
-      if (token.user.isEmailVerified === true)
-        return ERROR.ACCOUNT_ALREADY_VERIFIED;
-
-      if (new Date().getTime() > token.expiryDate.getTime()) {
-        return ERROR.VERIFICATION_LINK_EXPIRED;
-      }
-
-      await this.userService.getUserByIdAndUpdate(token.user.id, {
-        isEmailVerified: true,
-      });
-      return 'Success! Your account has been verified';
-    } catch (err) {
-      console.log(err);
-      return ERROR.SERVER_ERROR;
-      // throw new ConflictException(ERROR.USER_NOT_VERIFIED);
+    if (!token || new Date().getTime() > token.expiryDate.getTime()) {
+      throw new BadRequestException('Invalid token or token expired');
     }
+    if (token.user.isEmailVerified === true)
+      throw new BadRequestException('Account already verified');
+
+    await this.userService.getUserByIdAndUpdate(token.user.id, {
+      isEmailVerified: true,
+    });
+
   }
 
   async forgetPasswordBegin(email: string, callbackUrl: string) {
@@ -177,13 +184,13 @@ export class AuthService {
       { id: user.id },
       {
         secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-        expiresIn: 300, // expires in 5 min (300 seconds)
+        expiresIn: 1800, // expires in 30 min (300 seconds)
       },
     );
     const tokenData: Token = await this.tokenService.createToken({
       token,
       userId: user.id,
-      expiryDate: minutesFromNow(5),
+      expiryDate: minutesFromNow(30),
     });
     try {
       await this.emailService.sendEmailToResetPassword({
@@ -194,9 +201,10 @@ export class AuthService {
       });
       return token;
     } catch (err) {
+      this.logger.error(err.message);
       throw new HttpException(
         {
-          error: 'error sending reset link',
+          error: 'error reseting password',
           status: HttpStatus.INTERNAL_SERVER_ERROR,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,

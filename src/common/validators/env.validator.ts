@@ -10,10 +10,13 @@ export default Joi.object({
 
   COMPANY_NAME: Joi.string().required(),
   COMPANY_EMAIL: Joi.string().required(),
-  COMPANY_EMAIL_PASSWORD: Joi.string().required(),
-  SERVER_APP_HOST: Joi.string().required(),
-  SERVER_APP_PORT: Joi.string().required(),
+
   NGIMDOCK_LINKEDIN: Joi.string().required(),
+
+  MAILTRAP_HOST: Joi.string().required(),
+  MAILTRAP_USERNAME: Joi.string().required(),
+  MAILTRAP_PASSWORD: Joi.string().required(),
+  MAILTRAP_PORT: Joi.string().required(),
 
   OPEN_AI_KEY: Joi.string().required(),
   JWT_PUBLIC_KEY: Joi.string().required(),

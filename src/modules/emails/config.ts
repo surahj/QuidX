@@ -7,28 +7,23 @@ dotenv.config();
 
 const COMPANY_NAME = process.env.COMPANY_NAME;
 const COMPANY_EMAIL = process.env.COMPANY_EMAIL;
-const BASEURL = process.env.BASEURL;
-const COMPANY_EMAIL_PASSWORD = process.env.COMPANY_EMAIL_PASSWORD;
 
 const NGIMDOCK_LINKEDIN = process.env.NGIMDOCK_LINKEDIN;
 
 const SERVER_APP_HOST = process.env.SERVER_APP_HOST;
 const SERVER_APP_PORT = process.env.SERVER_APP_PORT;
 
-// export const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: COMPANY_EMAIL,
-//     pass: COMPANY_EMAIL_PASSWORD,
-//   },
-// });
+const mailtrapHost = process.env.MAILTRAP_HOST;
+const mailtrapPort = process.env.MAILTRAP_PORT;
+const mailtrapUsername = process.env.MAILTRAP_USERNAME;
+const mailtrapPassword = process.env.MAILTRAP_PASSWORD;
 
 export const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
+  host: mailtrapHost,
+  port: mailtrapPort,
   auth: {
-    user: '26f44159d9861d',
-    pass: '83a08c54792f1b',
+    user: mailtrapUsername,
+    pass: mailtrapPassword,
   },
 });
 
@@ -44,6 +39,7 @@ export const getEmailWelcomeOptions = ({
   email,
   username,
   token,
+  callbackUrl,
 }: ReceiverEmailData): EmailOptionsType => {
   const template = {
     body: {
@@ -54,7 +50,7 @@ export const getEmailWelcomeOptions = ({
         button: {
           color: '#22BC66',
           text: 'Confirm your account',
-          link: `${BASEURL}/api/v1/auth/verify/${token}`,
+          link: `${callbackUrl}?token=${token}`,
         },
       },
       outro: `Need help, or have questions? Just reply to this email, we'd love to help.
@@ -216,5 +212,39 @@ export const getEmailWhilePasswodResetedOptions = ({
     to: email,
     subject: `Your password has been reset`,
     html: welcomeEmailTemplate,
+  };
+};
+
+export const getEmailToDownloadPdf = ({
+  email,
+  username,
+  link,
+}: ReceiverEmailData): EmailOptionsType => {
+  const template = {
+    body: {
+      name: username || '',
+      intro: `Thank you for having interest in QuidX.`,
+      action: {
+        instructions: 'Click the button below to download your pdf.',
+        button: {
+          color: '#22BC66',
+          text: 'Downlod',
+          link: `${link}`,
+        },
+      },
+      outro: `Need help, or have questions? Just reply to this email, we'd love to help.
+
+
+              ${COMPANY_NAME} Team.
+            `,
+    },
+  };
+
+  const sendPdfTemplate = MailGenerator.generate(template);
+  return {
+    from: COMPANY_EMAIL,
+    to: email,
+    subject: `Download your pdf`,
+    html: sendPdfTemplate,
   };
 };

@@ -24,6 +24,7 @@ import {
   LoginDto,
   SignUpDto,
   ResetPasswordDto,
+  ResendTokenDto,
 } from './dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { TokenService } from './services/token.services';
@@ -94,21 +95,21 @@ export class AuthController {
   @ApiOperation({ summary: 'Verify Email' })
   @Get('/verify/:token')
   @UseInterceptors(ClassSerializerInterceptor)
-  async verify(@Req() req: Request, @Res() res, @Param('token') token: string) {
-    const status = await this.authService.verify(token);
-    res.send(`<p>${status}</p>`);
+  async verify(@Param('token') token: string) {
+    await this.authService.verify(token);
+    return {
+      meesage: 'User email has been verified',
+    };
   }
 
   @ApiOperation({ summary: 'send confirmation mail' })
-  @ApiBearerAuth('Bearer')
-  @UseGuards(JwtAuthGuard)
-  @Post('/createConfirmation')
+  @Post('/token/resend')
   @ApiResponse({
     status: 200,
     description: 'verification mail sent successfully',
   })
-  async resendConfirmationToken(@Req() req) {
-    await this.authService.generateUserConfirmation(req?.user);
+  async resendConfirmationToken(@Body() req: ResendTokenDto) {
+    await this.authService.resendToken(req);
     return {
       message: 'verification mail sent successfully',
     };

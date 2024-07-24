@@ -11,6 +11,7 @@ export type ReceiverEmailData = {
   username?: string;
   token?: string;
   callbackUrl?: string;
+  link?: string;
 };
 
 export interface OtpArgs {
