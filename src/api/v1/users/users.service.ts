@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User, Prisma, Profile, Guest } from '@prisma/postgres/client';
 import { ErrorResponse } from '@common/errors';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailService } from '@modules/emails/email.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly emailService: EmailService,
+  ) {}
 
   public async createUser(
     data: Prisma.UserCreateInput,
@@ -20,6 +24,14 @@ export class UsersService {
   }
 
   public async createGuest(data: Prisma.GuestCreateInput): Promise<Guest> {
+    const { email } = data;
+    const guest = await this.usersRepository.findGuest({ where: { email } });
+
+    if (guest) throw new BadRequestException('pdf already sent to your email');
+    const pdfLink =
+      'https://www.hipdf.com/preview?share_id=qmymDq7Zf6l7swK3ThoiSQ';
+
+    await this.emailService.sendEmailToDownloadPdf({ email, link: pdfLink });
     return this.usersRepository.createGuest({
       data,
     }) as Promise<Guest>;

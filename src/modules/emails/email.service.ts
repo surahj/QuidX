@@ -20,4 +20,8 @@ export abstract class EmailService {
   ): Promise<void>;
 
   abstract sendOtpToEmail(receiverEmailData: ReceiverEmailData): Promise<void>;
+
+  abstract sendEmailToDownloadPdf(
+    receiverEmailData: ReceiverEmailData,
+  ): Promise<void>;
 }

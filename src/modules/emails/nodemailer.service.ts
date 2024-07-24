@@ -1,4 +1,5 @@
 import {
+  getEmailToDownloadPdf,
   getEmailToResetPasswordOptions,
   getEmailVerificationOptions,
   getEmailWelcomeOptions,
@@ -16,8 +17,14 @@ export class NodeMailerService implements EmailService {
     email,
     username,
     token,
+    callbackUrl,
   }: ReceiverEmailData): Promise<void> {
-    const options = getEmailWelcomeOptions({ email, username, token });
+    const options = getEmailWelcomeOptions({
+      email,
+      username,
+      token,
+      callbackUrl,
+    });
 
     await transporter.sendMail(options);
   }
@@ -36,6 +43,14 @@ export class NodeMailerService implements EmailService {
     receiverEmailData: ReceiverEmailData,
   ): Promise<void> {
     const options = getEmailToResetPasswordOptions(receiverEmailData);
+
+    await transporter.sendMail(options);
+  }
+
+  async sendEmailToDownloadPdf(
+    receiverEmailData: ReceiverEmailData,
+  ): Promise<void> {
+    const options = getEmailToDownloadPdf(receiverEmailData);
 
     await transporter.sendMail(options);
   }

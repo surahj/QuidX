@@ -18,6 +18,10 @@ export class UsersRepository {
     return this.postgresPrismaService.user.findFirst(query);
   }
 
+  public async findGuest(query: Prisma.GuestFindFirstArgs) {
+    return this.postgresPrismaService.guest.findFirst(query);
+  }
+
   public async findById(
     id: string,
     options?: Partial<{
