@@ -170,10 +170,9 @@ export class AuthService {
     if (token.user.isEmailVerified === true)
       throw new BadRequestException('Account already verified');
 
-    await this.userService.getUserByIdAndUpdate(token.user.id, {
+    await this.userService.updateById(token.user.id, {
       isEmailVerified: true,
     });
-
   }
 
   async forgetPasswordBegin(email: string, callbackUrl: string) {
@@ -232,7 +231,7 @@ export class AuthService {
     const user: User = await this.verifyAndGetUserFromToken(data.token);
     //TODO -> check if  there is a possibility that a token will exist without a user
     const hashPassword = await this.bcryptService.hash(data.password);
-    await this.userService.getUserByIdAndUpdate(user.id, {
+    await this.userService.updateById(user.id, {
       password: hashPassword,
     });
   }
@@ -245,7 +244,7 @@ export class AuthService {
     }
 
     const hashPassword = await this.bcryptService.hash(newPassword);
-    await this.userService.getUserByIdAndUpdate(user.id, {
+    await this.userService.updateById(user.id, {
       password: hashPassword,
     });
   }

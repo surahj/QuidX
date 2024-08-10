@@ -25,6 +25,7 @@ model User {
   profile                    Profile                      @relation(fields: [profileId], references: [id])
   chats                      Chat[]
   token                      Token?
+  credits                    Int?                          @default(50)
   createdAt                  DateTime                     @default(now()) @map("created_at")
   updatedAt                  DateTime                     @updatedAt @map("update_at")
 

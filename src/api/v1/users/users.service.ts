@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { User, Prisma, Profile, Guest } from '@prisma/postgres/client';
-import { ErrorResponse } from '@common/errors';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailService } from '@modules/emails/email.service';
 
@@ -52,7 +51,7 @@ export class UsersService {
     }) as Promise<User & { profile: Profile }>;
   }
 
-  public async getUserByIdAndUpdate(
+  public async updateById(
     id: string,
     data: Prisma.UserUpdateInput,
   ): Promise<User> {
