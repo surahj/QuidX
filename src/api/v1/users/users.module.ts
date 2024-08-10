@@ -8,7 +8,7 @@ import { CronService } from './cron.service';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [DatabaseModule, ScheduleModule.forRoot(),],
+  imports: [DatabaseModule, ScheduleModule.forRoot()],
   controllers: [UsersController, GuestController],
   providers: [UsersService, UsersRepository, CronService],
   exports: [UsersService, CronService],
