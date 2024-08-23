@@ -11,6 +11,7 @@ export class RateService {
   private async initializeTatum() {
     return TatumSDK.init<Ethereum>({
       network: Network.ETHEREUM,
+      apiKey: { v4: process.env.TATUM_API_KEY },
     });
   }
 
