@@ -23,6 +23,7 @@ import { TokenService } from './token.services';
 import { minutesFromNow } from '../utils/timeUtils';
 import { ERROR } from '../error';
 import { ResendTokenDto, ResetPasswordDto } from '../dto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -50,30 +51,6 @@ export class AuthService {
     return user;
   }
 
-  async getJwtAccessToken(payload: { id: string; email: string }) {
-    this.logger.log('get JWT Access Token');
-    const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: `${this.configService.get(
-        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-      )}s`,
-    });
-    return token;
-  }
-
-  async getCookieWithJwtRefreshToken(payload: { id: string; email: string }) {
-    const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: `${this.configService.get(
-        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-      )}`,
-    });
-    const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-    )}`;
-    return { cookie, token };
-  }
-
   public getCookiesForLogOut() {
     return [
       'Authentication=; HttpOnly; Path=/; Max-Age=0',
@@ -87,6 +64,44 @@ export class AuthService {
     if (!user) throw new NotFoundException(ERROR.EMAIL_NOT_FOUND);
 
     this.generateUserConfirmation(user, callbackUrl);
+  }
+
+  async googleSignIn({
+    email,
+    firstName,
+    lastName,
+    provider,
+  }: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    provider: string;
+  }) {
+    let user = await this.userService.getUserByEmail(email);
+    console.log('user', user);
+
+    if (!user) {
+      const hashedPassword = await this.bcryptService.hash(
+        `${email?.split('@')[0]}-${randomUUID()}`,
+      );
+
+      user = await this.userService.createUser({
+        email,
+        password: hashedPassword,
+        provider,
+        profile: {
+          create: {
+            email,
+            firstName,
+            lastName,
+          },
+        },
+      });
+    }
+
+    const token = await this.jwtService.signAsync({ id: user.id });
+
+    return { token };
   }
 
   async signUp(user: SignUpDto): Promise<User> {
@@ -144,18 +159,17 @@ export class AuthService {
       this.logger.log(error.message);
     }
   }
-  // async login(user: LoginDto) {
-  //   const loginUser = await this.validateUser(user.email, user.password);
-  //   if (loginUser) {
-  //     const payload = { email: loginUser.email, sub: loginUser.id };
-  //     return { accessToken: this.jwtService.sign(payload) };
-  //   }
-  // }
+
+  async login(user: User) {
+    const token = await this.jwtService.signAsync({ id: user.id });
+
+    return { token };
+  }
 
   async validateUserPayload(payload): Promise<User> {
     this.logger.log('Validate user payload');
     const user: User = await this.userService.getUserById(payload.id);
-    if (user?.id == payload.id && user?.email == payload.email) {
+    if (user?.id == payload.id) {
       return user;
     }
   }
