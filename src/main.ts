@@ -62,7 +62,11 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ['https://quidxai.com', 'http://localhost:3000'],
+    origin: [
+      'https://quidxai.com',
+      'http://localhost:3000',
+      'https://quidx-frontend-2.onrender.com',
+    ],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
