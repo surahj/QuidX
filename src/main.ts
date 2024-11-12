@@ -65,6 +65,7 @@ async function bootstrap() {
     origin: [
       'https://quidxai.com',
       'http://localhost:3000',
+      'http://localhost:6024',
       'https://quidx-frontend-2.onrender.com',
     ],
     methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
