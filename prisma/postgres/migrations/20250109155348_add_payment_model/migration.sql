@@ -22,26 +22,20 @@ CREATE TYPE "Currency" AS ENUM ('NGN', 'USD');
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('pending', 'failed', 'cancelled', 'completed', 'reversed');
 
--- AlterTable
-ALTER TABLE "chat" DROP COLUMN "update_at",
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- RenameColumn
+ALTER TABLE "chat" RENAME COLUMN "update_at" TO "updated_at";
 
--- AlterTable
-ALTER TABLE "guests" DROP COLUMN "update_at",
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- RenameColumn
+ALTER TABLE "guests" RENAME COLUMN "update_at" TO "updated_at";
 
--- AlterTable
-ALTER TABLE "message" DROP COLUMN "update_at",
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- RenameColumn
+ALTER TABLE "message" RENAME COLUMN "update_at" TO "updated_at";
 
--- AlterTable
-ALTER TABLE "token" DROP COLUMN "update_at",
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- RenameColumn
+ALTER TABLE "token" RENAME COLUMN "update_at" TO "updated_at";
 
--- AlterTable
-ALTER TABLE "users" DROP COLUMN "update_at",
-ADD COLUMN     "credits" INTEGER DEFAULT 50,
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- RenameColumn
+ALTER TABLE "users" RENAME COLUMN "update_at" TO "updated_at";
 
 -- CreateTable
 CREATE TABLE "credit_packages" (
