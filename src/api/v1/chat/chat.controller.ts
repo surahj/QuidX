@@ -120,7 +120,6 @@ export class ChatController {
 
   @Delete('/:chatId')
   public async deleteChat(@Param('chatId') chatId: string) {
-    console.log(chatId);
     await this.chatService.deleteChat(chatId);
 
     return {

@@ -20,6 +20,7 @@ import { UsersModule } from '@api/v1/users/users.module';
 import { ChatModule } from '@api/v1/chat/chat.module';
 import { RateModule } from '@api/v1/rate/rate.module';
 import { AuthModule } from '@api/v1/auth/auth.module';
+import { PaymentModule } from '@api/v1/payment/payment.module';
 
 AdminJS.registerAdapter({ Database, Resource });
 
@@ -32,6 +33,7 @@ AdminJS.registerAdapter({ Database, Resource });
     ChatModule,
     RateModule,
     AuthModule,
+    PaymentModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseLoggerInterceptor },
