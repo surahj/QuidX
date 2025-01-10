@@ -82,7 +82,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  const modules = [UsersModule, ChatModule, RateModule, AuthModule];
+  const modules = [AppModule];
   SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');
