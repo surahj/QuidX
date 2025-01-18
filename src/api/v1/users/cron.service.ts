@@ -15,7 +15,7 @@ export class CronService {
 
       await this.postgresPrismaService.user.updateMany({
         data: {
-          credits: 50,
+          bonusCredit: 50,
         },
       });
 

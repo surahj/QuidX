@@ -26,7 +26,8 @@ model User {
   chats                      Chat[]
   token                      Token?
   paymentHistories           PaymentHistory[]
-  credits                    Int?                          @default(50)
+  credit                    Int?                          @default(0)
+  bonusCredit               Int?                          @default(50)
   createdAt                  DateTime                     @default(now()) @map("created_at")
   updatedAt                  DateTime                     @updatedAt @map("updated_at")
 

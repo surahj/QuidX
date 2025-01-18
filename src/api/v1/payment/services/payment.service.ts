@@ -10,9 +10,7 @@ import {
 import {
   Currency,
   mapUserPaymentToResponse,
-  PaymentHistoryDto,
   PaystackCreditPaymentDto,
-  TransactionType,
 } from '../dto/payment.dto';
 import { PostgresPrismaService } from '@database/postgres-prisma.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -196,6 +194,10 @@ export class PaymentService {
     }
   }
 
+  async getPackages() {
+    return this.prisma.package.findMany();
+  }
+
   private async confirm(payload: {
     paymentTxn: any;
     amount: number;
@@ -222,7 +224,7 @@ export class PaymentService {
       await this.prisma.user.update({
         where: { id: transaction.userId },
         data: {
-          credits: {
+          credit: {
             increment: creditPackage.credit,
           },
         },
