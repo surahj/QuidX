@@ -1,5 +1,5 @@
 import { PaymentService } from '../services/payment.service';
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -29,6 +29,21 @@ export class PaymentController {
   ): Promise<any> {
     const user = req?.user;
     const data = await this.paymentService.paystack(user.id, body);
+
+    return new GenericStatus({
+      message: 'success',
+      data,
+    });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Packages retrieved successfully',
+  })
+  @ApiOperation({ summary: 'Get packages' })
+  @Get('/packages')
+  async packages(): Promise<any> {
+    const data = await this.paymentService.getPackages();
 
     return new GenericStatus({
       message: 'success',
