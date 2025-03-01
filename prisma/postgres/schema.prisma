@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../../node_modules/@prisma/postgres/client"
+  provider        = "prisma-client-js"
+  output          = "../../node_modules/@prisma/postgres/client"
 }
 
 datasource db {
@@ -11,87 +11,85 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  pk                         Int                          @id @default(autoincrement())
-  id                         String                       @unique @default(uuid())
-  email                      String                       @unique
-  password                   String
-  role                       Role                         @default(USER)
-  isBlocked                  Boolean                      @default(false)
-  isEmailVerified            Boolean?                     @default(false) @map("is_email_verified")
-  profileId                  String                       @unique
-  profile                    Profile                      @relation(fields: [profileId], references: [id])
-  chats                      Chat[]
-  token                      Token?
-  paymentHistories           PaymentHistory[]
-  credit                    Int?                          @default(0)
-  bonusCredit               Int?                          @default(50)
-  createdAt                  DateTime                     @default(now()) @map("created_at")
-  updatedAt                  DateTime                     @updatedAt @map("updated_at")
+  pk               Int              @id @default(autoincrement())
+  id               String           @unique @default(uuid())
+  email            String           @unique
+  password         String
+  role             Role             @default(USER)
+  isBlocked        Boolean          @default(false)
+  isEmailVerified  Boolean?         @default(false) @map("is_email_verified")
+  profileId        String           @unique
+  profile          Profile          @relation(fields: [profileId], references: [id])
+  chats            Chat[]
+  token            Token?
+  paymentHistories PaymentHistory[]
+  credit           Int?             @default(0)
+  bonusCredit      Int?             @default(50)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
 
-  @@map("users")
   @@index(fields: [email])
+  @@map("users")
 }
 
 model Guest {
-  pk                         Int                          @id @default(autoincrement())
-  id                         String                       @unique @default(uuid())
-  email                      String
-  message                    String?                      
+  pk      Int     @id @default(autoincrement())
+  id      String  @unique @default(uuid())
+  email   String
+  message String?
 
-  createdAt                  DateTime                     @default(now()) @map("created_at")
-  updatedAt                  DateTime                     @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("guests")
 }
 
 model Package {
-  pk                         Int                          @id @default(autoincrement())
-  id                         String                       @unique @default(uuid())
-  credit                     Int
-  amount                     Decimal                      @default(0.00)      @db.Decimal(20, 2)
-  description                String?                      
-  plan                       String
-  currency                   Currency                      @default(USD)           
+  pk          Int      @id @default(autoincrement())
+  id          String   @unique @default(uuid())
+  credit      Int
+  amount      Decimal  @default(0.00) @db.Decimal(20, 2)
+  description String?
+  plan        String
+  currency    Currency @default(USD)
 
-  createdAt                  DateTime                     @default(now()) @map("created_at")
-  updatedAt                  DateTime                     @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("credit_packages")
 }
 
 model PaymentHistory {
-  id             String             @id @default(uuid()) @map("id")
-  userId         String             @map("user_id")
-  ref            String?            @map("ref")
-  amount         Decimal            @default(0.00)          @db.Decimal(20, 2)
-  fee            Decimal            @default(0.00)          @db.Decimal(20, 2)
-  currency       Currency           @default(USD)           
-  status         PaymentStatus      @default(pending)       
-  source         PaymentSource?     @default(paystack)     
-  failureReason  String?            @map("failure_reason")
-  packageId      String?           
-  
-  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String         @id @default(uuid()) @map("id")
+  userId        String         @map("user_id")
+  ref           String?        @map("ref")
+  amount        Decimal        @default(0.00) @db.Decimal(20, 2)
+  fee           Decimal        @default(0.00) @db.Decimal(20, 2)
+  currency      Currency       @default(USD)
+  status        PaymentStatus  @default(pending)
+  source        PaymentSource? @default(paystack)
+  failureReason String?        @map("failure_reason")
+  packageId     String?
 
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("payment_histories") 
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("payment_histories")
 }
 
 model ExchangeRate {
-  id             String   @id @default(cuid()) 
-  name           String?                      
-  unit           String?  @unique            
-  symbol         String?                     
-  value          Decimal  @default(0.00)      @db.Decimal(20, 2)
-  previous       Decimal  @default(0.00)      @db.Decimal(20, 2)
+  id       String  @id @default(cuid())
+  name     String?
+  unit     String? @unique
+  symbol   String?
+  value    Decimal @default(0.00) @db.Decimal(20, 2)
+  previous Decimal @default(0.00) @db.Decimal(20, 2)
 
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("exchange_rates")
 }
@@ -113,7 +111,6 @@ enum PaymentStatus {
   reversed
 }
 
-
 model Profile {
   pk               Int       @id @default(autoincrement())
   id               String    @unique @default(uuid())
@@ -129,37 +126,35 @@ model Profile {
   isNotify         Boolean?  @default(false)
   user             User?
 
-
   @@unique([pk, id])
   @@map("profiles")
 }
 
-
 model Chat {
-  pk                          Int       @id @default(autoincrement())
-  id                          String    @unique @default(uuid())
-  userId                      String
-  user                        User      @relation(fields: [userId], references: [id])
-  title                       String?   @default("New Chat")
-  messages                    Message[]
+  pk       Int       @id @default(autoincrement())
+  id       String    @unique @default(uuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id])
+  title    String?   @default("New Chat")
+  messages Message[]
 
-  createdAt                   DateTime  @default(now()) @map("created_at")
-  updatedAt                   DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([pk, id])
-  @@map("chat")
   @@index(fields: [id])
+  @@map("chat")
 }
 
 model Message {
-  pk                          Int     @id @default(autoincrement())
-  id                          String  @unique @default(uuid())
-  chatId                      String
-  chat                        Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  role                        String
-  content                     String
-  createdAt                   DateTime @default(now()) @map("created_at")
-  updatedAt                   DateTime @updatedAt @map("updated_at")
+  pk        Int      @id @default(autoincrement())
+  id        String   @unique @default(uuid())
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  role      String
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([pk, id])
   @@map("message")
@@ -176,16 +171,15 @@ enum Role {
 }
 
 model Token {
-  pk                          Int     @id @default(autoincrement())
-  id                          String  @unique @default(uuid())
-  userId                      String?  @unique
-  user                        User?     @relation(fields: [userId], references: [id])
-  expiryDate                  DateTime?
-  token                       String
-  createdAt                   DateTime @default(now()) @map("created_at")
-  updatedAt                   DateTime @updatedAt @map("updated_at")
+  pk         Int       @id @default(autoincrement())
+  id         String    @unique @default(uuid())
+  userId     String?   @unique
+  user       User?     @relation(fields: [userId], references: [id])
+  expiryDate DateTime?
+  token      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   @@unique([pk, id])
   @@map("token")
 }
-
