@@ -59,14 +59,21 @@ async function bootstrap() {
     }),
   });
 
-  app.use(cookieParser());
+  // app.use(cookieParser());
 
-  app.enableCors({
-    origin: ['https://quidxai.com', 'http://localhost:3000'],
-    methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  // app.enableCors({
+  //   origin: [
+  //     'https://quidxai.com',
+  //     'http://localhost:3000',
+  //     'http://localhost:6024',
+  //     'https://quidx-frontend-2.onrender.com',
+  //   ],
+  //   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'PATCH'],
+  //   credentials: true,
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  // });
+
+  app.enableCors();
 
   app.setGlobalPrefix('api');
   app.enableVersioning({
@@ -75,7 +82,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  const modules = [UsersModule, ChatModule, RateModule, AuthModule];
+  const modules = [AppModule];
   SwaggerInit(app, modules);
 
   const PORT = configService.get<string>('PORT');

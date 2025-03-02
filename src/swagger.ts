@@ -46,7 +46,7 @@ export function SwaggerInit(
   const swaggerRoute = configService.get<string>('SWAGGER_ROUTE');
 
   const document = SwaggerModule.createDocument(app, config, {
-    include: modules,
+    // include: modules,
     operationIdFactory: (_controllerKey, methodKey) => methodKey,
   });
 
