@@ -10,6 +10,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenService } from './services/token.services';
 import { DatabaseModule } from '@database/database.module';
 import { EmailModule } from '@modules/emails/email.module';
+import { GoogleStrategy } from './strategies/google-auth.strategy';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
@@ -19,9 +21,19 @@ import { EmailModule } from '@modules/emails/email.module';
     LocalStrategy,
     JwtStrategy,
     TokenService,
+    GoogleStrategy,
   ],
   imports: [
-    JwtModule.register({}),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_ACCESS_TOKEN_SECRET'),
+        signOptions: {
+          expiresIn: configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+        },
+      }),
+    }),
     UsersModule,
     PassportModule,
     DatabaseModule,

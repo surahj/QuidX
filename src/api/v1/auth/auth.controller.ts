@@ -29,8 +29,10 @@ import {
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { TokenService } from './services/token.services';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 @ApiTags('Authentications Manager')
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -60,23 +62,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Login to QuidX' })
   @Post('/login')
   @UseGuards(LocalAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   async login(@Body() data: LoginDto, @Req() req) {
-    const { id, email } = req.user;
-    const accessToken = await this.authService.getJwtAccessToken({ id, email });
+    const { user } = req;
+    const { token } = await this.authService.login(user);
 
-    // const refreshTokenCookie =
-    //   await this.authService.getCookieWithJwtRefreshToken(payload);
-
-    // const tokenData = { token: refreshTokenCookie.token, userId: user.id };
-    // await this.tokenService.createRefreshToken(tokenData);
-    await req.res.setHeader('Authorization', `Bearer ${accessToken}`);
+    await req.res.setHeader('Authorization', `Bearer ${token}`);
 
     return {
       message: 'User login successful',
       statusCode: 200,
-      token: accessToken,
-      data: { userId: id },
+      token,
+      data: { userId: user.id },
     };
   }
 
@@ -94,7 +90,6 @@ export class AuthController {
   })
   @ApiOperation({ summary: 'Verify Email' })
   @Get('/verify/:token')
-  @UseInterceptors(ClassSerializerInterceptor)
   async verify(@Param('token') token: string) {
     await this.authService.verify(token);
     return {
@@ -154,5 +149,27 @@ export class AuthController {
       statusCode: 200,
       message: 'password reset was successfull',
     };
+  }
+
+  @ApiOperation({ summary: 'signup/signin with google' })
+  @ApiBearerAuth('Bearer')
+  @UseGuards(GoogleAuthGuard)
+  @Get('/google')
+  async googleAuth(@Req() req) {
+    // The user will be redirected to Google for authentication
+  }
+
+  @UseGuards(GoogleAuthGuard)
+  @Get('/google/callback')
+  async googleAuthRedirect(@Req() req, @Res() res) {
+    const appUrl = process.env.APP_URL;
+    try {
+      const { user } = req;
+      const { token } = await this.authService.googleSignIn(user);
+
+      res.redirect(`${appUrl}?token=${token}`);
+    } catch (error) {
+      res.redirect(`${appUrl}/error}`);
+    }
   }
 }
