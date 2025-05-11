@@ -1,5 +1,15 @@
 import { PaymentService } from '../services/payment.service';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -7,7 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
-import { PaystackCreditPaymentDto } from '../dto/payment.dto';
+import { CreditPaymentDto, VerifyKoraPayment } from '../dto/payment.dto';
 import { GenericStatus } from '@common/dto/http-status.dto';
 
 @ApiTags('Payment Management')
@@ -25,10 +35,30 @@ export class PaymentController {
   @Post('/paystack/initiate')
   async paystackDeposit(
     @Req() req,
-    @Body() body: PaystackCreditPaymentDto,
+    @Body() body: CreditPaymentDto,
   ): Promise<any> {
     const user = req?.user;
     const data = await this.paymentService.paystack(user.id, body);
+
+    return new GenericStatus({
+      message: 'success',
+      data,
+    });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Credit payment initiated successfully',
+  })
+  @ApiOperation({ summary: 'Credit Payment' })
+  @UseGuards(JwtAuthGuard)
+  @Post('/korapay/initiate')
+  async korapayDeposit(
+    @Req() req,
+    @Body() body: CreditPaymentDto,
+  ): Promise<any> {
+    const user = req?.user;
+    const data = await this.paymentService.korapay(user.id, body);
 
     return new GenericStatus({
       message: 'success',
@@ -48,6 +78,23 @@ export class PaymentController {
     return new GenericStatus({
       message: 'success',
       data,
+    });
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Payment processed successfully',
+  })
+  @ApiOperation({ summary: 'Verify korapay deposit payment' })
+  @Post('/korapay/verify')
+  @HttpCode(HttpStatus.OK)
+  async confirmPaystack(
+    @Query() { reference }: VerifyKoraPayment,
+  ): Promise<GenericStatus<{ message: string }>> {
+    await this.paymentService.verifyKoraPayment(reference);
+
+    return new GenericStatus({
+      message: 'Payment verified successfully',
     });
   }
 }

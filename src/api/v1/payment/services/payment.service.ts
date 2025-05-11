@@ -1,3 +1,4 @@
+import { KoraPayService } from './kora.service';
 import {
   BadRequestException,
   HttpException,
@@ -10,7 +11,7 @@ import {
 import {
   Currency,
   mapUserPaymentToResponse,
-  PaystackCreditPaymentDto,
+  CreditPaymentDto,
 } from '../dto/payment.dto';
 import { PostgresPrismaService } from '@database/postgres-prisma.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +19,7 @@ import { PaystackService } from './paystack.service';
 import { createHmac } from 'crypto';
 import { TransactionStatus } from '../enums';
 import { Decimal } from '@prisma/client/runtime';
+import { generateRandomToken } from '@common/utils/string';
 
 @Injectable()
 export class PaymentService {
@@ -25,11 +27,12 @@ export class PaymentService {
   constructor(
     private readonly prisma: PostgresPrismaService,
     private readonly paystackService: PaystackService,
+    private readonly koraPayService: KoraPayService,
   ) {}
 
   async paystack(
     userId: string,
-    payload: PaystackCreditPaymentDto,
+    payload: CreditPaymentDto,
   ): Promise<{
     transaction: any;
     paymentUrl: string;
@@ -76,9 +79,59 @@ export class PaymentService {
     };
   }
 
+  async korapay(
+    userId: string,
+    payload: CreditPaymentDto,
+  ): Promise<{
+    transaction: any;
+    paymentUrl: string;
+  }> {
+    const { redirectUrl, packageId } = payload;
+
+    const payment = await this.initiate(userId, payload);
+
+    const {
+      transaction,
+      metadata: { email },
+    } = payment;
+
+    const { id: ref, amount, currency } = transaction;
+
+    const response = await this.koraPayService.initiate({
+      currency,
+      amount,
+      email,
+      redirectUrl,
+      ref,
+    });
+
+    const {
+      data: { checkout_url: paymentUrl },
+    } = response;
+
+    if (!paymentUrl)
+      throw new InternalServerErrorException('Payment initiation failed');
+
+    const tx = await this.prisma.paymentHistory.create({
+      data: {
+        user: { connect: { id: userId } },
+        id: transaction.id,
+        amount: transaction.amount,
+        packageId,
+        currency,
+        source: 'korapay',
+      },
+    });
+
+    return {
+      transaction: mapUserPaymentToResponse(tx),
+      paymentUrl,
+    };
+  }
+
   private async initiate(
     userId: string,
-    payload: PaystackCreditPaymentDto,
+    payload: CreditPaymentDto,
   ): Promise<{
     transaction: {
       id: string;
@@ -194,8 +247,50 @@ export class PaymentService {
     }
   }
 
+  async confirmKoraPay(payload: any): Promise<{ message: string }> {
+    const { data, event } = payload;
+    const allowedEvent = ['charge.success'];
+
+    if (!allowedEvent.includes(event) || !data.reference) {
+      throw new BadRequestException('Invalid event type');
+    }
+
+    this.logger.log(
+      `KoraPay webhook event: ${event}, reference: ${data.reference}`,
+    );
+
+    return this.verifyKoraPayment(data.reference);
+  }
+
   async getPackages() {
     return this.prisma.package.findMany();
+  }
+
+  async verifyKoraPayment(ref: string): Promise<{ message: string }> {
+    const transaction = await this.prisma.paymentHistory.findUnique({
+      where: { id: ref },
+    });
+
+    if (!transaction) throw new BadRequestException('Transaction not found');
+
+    if (transaction.status === TransactionStatus.Completed) {
+      return { message: 'Transaction already processed' };
+    }
+
+    const { id: transactionId } = transaction;
+
+    const { status, amount, fee } = await this.koraPayService.verify(
+      transactionId,
+    );
+
+    if (status === 'success') {
+      return this.confirm({
+        paymentTxn: transaction,
+        amount,
+        fee,
+        ref: generateRandomToken(10),
+      });
+    }
   }
 
   private async confirm(payload: {
@@ -238,6 +333,10 @@ export class PaymentService {
           status: TransactionStatus.Completed,
         },
       });
+
+      this.logger.log(
+        `ref: ${ref} Payment of ${transaction.amount} for ${creditPackage.credit} credits completed successfully`,
+      );
 
       return { message: 'Payment processed successfully' };
     } catch (error) {

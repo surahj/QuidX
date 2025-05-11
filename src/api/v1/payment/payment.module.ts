@@ -4,9 +4,15 @@ import { PaymentController } from './controllers/payment.controller';
 import { PaymentService } from './services/payment.service';
 import { PostgresPrismaService } from '@database/postgres-prisma.service';
 import { PaymentWebhookController } from './controllers/payment-webhook.controller';
+import { KoraPayService } from './services/kora.service';
 
 @Module({
   controllers: [PaymentController, PaymentWebhookController],
-  providers: [PaymentService, PostgresPrismaService, PaystackService],
+  providers: [
+    PaymentService,
+    PostgresPrismaService,
+    PaystackService,
+    KoraPayService,
+  ],
 })
 export class PaymentModule {}
