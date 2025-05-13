@@ -25,5 +25,5 @@ jobs:
           yarn install --only=prod --frozen-lockfile
           npx prisma migrate deploy --schema prisma/postgres/schema.prisma
           yarn build
-          pm2 restart main
+          pm2 restart dev
 
