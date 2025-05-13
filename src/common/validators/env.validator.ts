@@ -21,33 +21,4 @@ export default Joi.object({
   OPEN_AI_KEY: Joi.string().required(),
   JWT_PUBLIC_KEY: Joi.string().required(),
   JWT_PRIVATE_KEY: Joi.string().required(),
-
-  ADMINJS_ROUTE: Joi.string().when('NODE_ENV', {
-    is: Joi.string().valid('development'),
-    then: Joi.string().default('/admin'),
-    otherwise: Joi.required(),
-  }),
-  ADMINJS_COOKIE_NAME: Joi.string().when('NODE_ENV', {
-    is: Joi.string().valid('development'),
-    then: Joi.optional(),
-    otherwise: Joi.required(),
-  }),
-  ADMINJS_COOKIE_SECRET: Joi.string().when('NODE_ENV', {
-    is: Joi.string().valid('development'),
-    then: Joi.optional(),
-    otherwise: Joi.required(),
-  }),
-
-  SWAGGER_ROUTE: Joi.string().default('/api/docs'),
-
-  DEFAULT_ADMIN_USERNAME: Joi.string().when('NODE_ENV', {
-    is: Joi.string().valid('development'),
-    then: Joi.optional(),
-    otherwise: Joi.required(),
-  }),
-  DEFAULT_ADMIN_PASSWORD: Joi.string().when('NODE_ENV', {
-    is: Joi.string().valid('development'),
-    then: Joi.optional(),
-    otherwise: Joi.required(),
-  }),
 });
