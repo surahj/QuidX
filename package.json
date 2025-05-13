@@ -27,8 +27,7 @@
     "prisma:postgres:dbpush": "npx prisma db push --schema prisma/postgres/schema.prisma",
     "prisma:generate:postgres_client": "npx prisma generate --schema prisma/postgres/schema.prisma",
     "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma",
-    "prisma:studio": "prisma studio --schema prisma/postgres/schema.prisma",
-    "prepare": "husky install"
+    "prisma:studio": "prisma studio --schema prisma/postgres/schema.prisma"
   },
   "dependencies": {
     "@adminjs/express": "^5.1.0",
