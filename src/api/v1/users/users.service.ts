@@ -44,7 +44,12 @@ export class UsersService {
   }
 
   public async getUserById(id: string): Promise<User & { profile: Profile }> {
-    return this.usersRepository.findById(id, { includeProfile: true });
+    const data = await this.usersRepository.findById(id, {
+      includeProfile: true,
+    });
+    delete data.password;
+
+    return data;
   }
 
   public async getUserByEmail(
