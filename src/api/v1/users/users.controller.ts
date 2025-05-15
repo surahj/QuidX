@@ -41,6 +41,6 @@ export class UsersController {
 
   @Get('/profile')
   public async getProfile(@Req() req) {
-    return this.usersService.getUserProfile(req.user.profile.id);
+    return this.usersService.getUserById(req.user.id);
   }
 }
