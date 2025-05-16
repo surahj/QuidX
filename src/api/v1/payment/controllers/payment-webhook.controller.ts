@@ -40,4 +40,20 @@ export class PaymentWebhookController {
       data: await this.paymentService.confirmPaystack(req, signature),
     });
   }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Payment processed successfully',
+  })
+  @ApiOperation({ summary: 'Verify korapay payment' })
+  @Post('/korapay')
+  @HttpCode(HttpStatus.OK)
+  async confirmKoraPay(
+    @Body() req,
+  ): Promise<GenericStatus<{ message: string }>> {
+    return new GenericStatus({
+      message: 'Payment processed successfully',
+      data: await this.paymentService.confirmKoraPay(req),
+    });
+  }
 }

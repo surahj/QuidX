@@ -97,6 +97,7 @@ model ExchangeRate {
 
 enum PaymentSource {
   paystack
+  korapay
 }
 
 enum Currency {

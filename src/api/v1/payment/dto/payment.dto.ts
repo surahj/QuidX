@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Decimal } from '@prisma/client/runtime';
 import {
   IsEnum,
   IsInt,
@@ -38,7 +37,7 @@ export class BasePaymentDto {
   amount: number;
 }
 
-export class PaystackCreditPaymentDto {
+export class CreditPaymentDto {
   @ApiProperty()
   @IsOptional()
   @IsUrl()
@@ -52,7 +51,7 @@ export class PaystackCreditPaymentDto {
   @ApiProperty()
   @IsOptional()
   @IsEnum(Currency)
-  currency: Currency = Currency.USD;
+  currency: Currency = Currency.NGN;
 }
 
 export class TransactionDto {
@@ -77,4 +76,18 @@ export class PaymentHistoryDto {
   failureReason?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export type KoraPayResponse = {
+  status: string;
+  amount: number;
+  message: string;
+  fee?: number;
+};
+
+export class VerifyKoraPayment {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  reference: string;
 }
